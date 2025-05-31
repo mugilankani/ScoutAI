@@ -80,21 +80,37 @@ async function embedAndStoreJson(jsonString, originalJson, documentName) {
 
     const embedding = embeddingResult[0].embedding;
 
-    // Store in a separate collection for JSON documents
-    const docRef = await firestore.collection("json_documents").add({
-      embedding: FieldValue.vector(embedding),
-      content: jsonString, // String version for embedding/search
-      originalData: originalJson, // Original JSON structure
-      metadata: {
-        documentName,
-        timestamp: FieldValue.serverTimestamp(),
-        charCount: jsonString.length,
-        source: "json",
-        type: "json_document",
-      },
-    });
+    const docRef = firestore.collection("json_documents").doc(documentName);
 
-    console.log(`✅ JSON document stored in Firestore with ID: ${docRef.id}`);
+    // Fetch existing doc to preserve createdAt if present
+    let createdAt = FieldValue.serverTimestamp();
+    const existingDoc = await docRef.get();
+    if (existingDoc.exists && existingDoc.data()?.metadata?.createdAt) {
+      createdAt = existingDoc.data().metadata.createdAt;
+    }
+
+    await docRef.set(
+      {
+        embedding: FieldValue.vector(embedding),
+        content: jsonString,
+        originalData: originalJson,
+        fingerprint: originalJson.fingerprint,
+        metadata: {
+          documentName,
+          timestamp: FieldValue.serverTimestamp(),
+          charCount: jsonString.length,
+          source: "json",
+          type: "json_document",
+          createdAt: createdAt,
+          updatedAt: FieldValue.serverTimestamp(),
+        },
+      },
+      { merge: true }
+    );
+
+    console.log(
+      `✅ JSON document stored/updated in Firestore with ID: ${docRef.id}`
+    );
     return docRef.id;
   } catch (error) {
     console.error("Failed to embed or store JSON:", error);
