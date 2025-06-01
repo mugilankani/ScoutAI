@@ -5,6 +5,7 @@ import Settings from "./components/Settings";
 import AuthProvider from "./context/AuthContext";
 import ProtectedRoute from "./components/ProtectedRoute";
 import HomePage from "./components/HomePage";
+import PersonProfile from "./components/PersonProfile";
 
 function App() {
   return (
@@ -13,7 +14,7 @@ function App() {
         <Routes>
           <Route path="/" element={<LandingPage />} />
           <Route
-            path="/chat"
+            path="/search"
             element={
               <ProtectedRoute>
                 <HomePage />
@@ -25,6 +26,14 @@ function App() {
             element={
               <ProtectedRoute>
                 <SearchResults />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/p/:personId"
+            element={
+              <ProtectedRoute>
+                <PersonProfile />
               </ProtectedRoute>
             }
           />

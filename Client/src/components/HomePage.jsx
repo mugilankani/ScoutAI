@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useNavigate } from "react-router";
 import axiosInstance from "../axios";
 import Navbar from "./Navbar";
 
@@ -11,25 +12,39 @@ const EXAMPLES = [
 const HomePage = () => {
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
+  const navigate = useNavigate();
 
   const handleExampleClick = (text) => {
     setInput(text);
   };
-
   const handleSend = async (message = input) => {
     if (!message.trim()) return;
 
     setLoading(true);
     try {
-      const response = await axiosInstance.post(
-        `/s/q?=${encodeURIComponent(message)}`,
-        {
-          prompt: message,
-        }
-      );
-      console.log("AI response:", response.data);
+      // Generate a unique search ID
+      const searchId = Date.now().toString();
+      
+      // Make API call to initiate search
+      const response = await axiosInstance.post("/api/search", {
+        query: message,
+        searchId: searchId,
+      });
+      
+      console.log("Search initiated:", response.data);
+      
+      // Navigate to search results with the search ID and query
+      navigate(`/s/${searchId}`, { 
+        state: { query: message } 
+      });
+      
     } catch (err) {
-      console.error("Request failed", err);
+      console.error("Search failed", err);
+      // For demo purposes, still navigate to show mock results
+      const searchId = Date.now().toString();
+      navigate(`/s/${searchId}`, { 
+        state: { query: message } 
+      });
     }
     setLoading(false);
     setInput("");

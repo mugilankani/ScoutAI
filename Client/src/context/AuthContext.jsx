@@ -1,10 +1,10 @@
 import { createContext, useContext, useState, useEffect } from "react";
-import axios from "axios";
+import axiosInstance from "../axios";
 
 const AuthContext = createContext();
 
 // Toggle this flag to true when you want to bypass Google auth in dev.
-const DEV_BYPASS_AUTH = true;
+const DEV_BYPASS_AUTH = false;
 
 // A dummy user object to use when DEV_BYPASS_AUTH === true.
 const DEV_USER = {
@@ -36,10 +36,9 @@ const AuthProvider = ({ children }) => {
    * — Calls backend to see if there’s an active Google session.
    * — If yes, sets `user` to the returned profile object.
    * — If no, leaves `user` as null.
-   */
-  const checkAuthStatus = async () => {
+   */  const checkAuthStatus = async () => {
     try {
-      const resp = await axios.get("/api/auth/status");
+      const resp = await axiosInstance.get("/auth/status");
       // Expect response shape: { user: { id, name, email, avatarUrl } }
       if (resp.data?.user) {
         setUser(resp.data.user);
@@ -69,13 +68,12 @@ const AuthProvider = ({ children }) => {
    * login()
    * — Simply redirect user to Google OAuth flow on the backend.
    * — In dev mode, does nothing (you’re already “logged in” as DEV_USER).
-   */
-  const login = () => {
+   */  const login = () => {
     if (DEV_BYPASS_AUTH) {
       // No-op in dev mode
       return;
     }
-    window.location.href = "/api/auth/google";
+    window.location.href = `${import.meta.env.VITE_API_URL}/auth/google`;
   };
 
   /**
@@ -87,10 +85,8 @@ const AuthProvider = ({ children }) => {
     if (DEV_BYPASS_AUTH) {
       setUser(null);
       return;
-    }
-
-    try {
-      await axios.post("/api/auth/logout");
+    }    try {
+      await axiosInstance.post("/auth/logout");
     } catch (err) {
       console.warn("Logout request failed:", err);
       // Even if the call fails, still clear client state

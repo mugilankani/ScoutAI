@@ -4,121 +4,67 @@ import Navbar from "./Navbar";
 function Settings() {
   const { user, logout } = useAuth();
 
-  if (!user) {
-    return null;
-  }
-
-  const handleLogout = () => {
-    logout();
+  const handleLogout = async () => {
+    try {
+      await logout();
+    } catch (error) {
+      console.error("Logout failed:", error);
+    }
   };
-
   return (
     <div className="min-h-screen">
       <Navbar />
 
-      <div className="max-w-4xl mx-auto px-4 py-8">
-        <div className="mb-8">
-          <h1 className="text-3xl font-serif font-bold text-gray-900 mb-2">
-            Settings
-          </h1>
-          <p className="text-gray-600">Manage your account and preferences</p>
-        </div>
-
-        {/* Profile Section */}
-        <div className="bg-white rounded-xl border border-gray-200 p-6 mb-6">
-          <h2 className="text-xl font-semibold text-gray-900 mb-6">
-            Profile Information
-          </h2>
-
-          <div className="flex items-center gap-6 mb-6">
-            <div className="relative">
-              <img
-                src={
-                  user.avatar ||
-                  user.picture ||
-                  `https://ui-avatars.com/api/?name=${encodeURIComponent(
-                    user.name || user.email
-                  )}&background=6366f1&color=fff`
-                }
-                alt={user.name || user.email}
-                className="w-20 h-20 rounded-full border-4 border-gray-100"
-              />
-            </div>
-
-            <div className="flex-1">
-              <h3 className="text-lg font-semibold text-gray-900">
-                {user.name || user.displayName || "User"}
-              </h3>
-              <p className="text-gray-600">{user.email}</p>
-              {user.id && (
-                <p className="text-sm text-gray-500 mt-1">ID: {user.id}</p>
+      <div className="flex h-[calc(100vh-64px)] flex-col items-center justify-center text-gray-900 px-4 py-6">
+        <div className="flex flex-col items-center justify-center gap-8 max-w-md w-full">
+          <div className="flex flex-col items-center text-center">
+            <div className="w-24 h-24 rounded-full bg-gray-200 flex items-center justify-center mb-4 overflow-hidden">
+              {user?.avatarUrl ? (
+                <img
+                  src={user.avatarUrl}
+                  alt={user?.name || "User"}
+                  className="w-full h-full object-cover"
+                />
+              ) : (
+                <svg
+                  className="w-12 h-12 text-gray-500"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
+                  />
+                </svg>
               )}
             </div>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div className="bg-gray-50 rounded-lg p-4">
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Name
-              </label>
-              <p className="text-gray-900">
-                {user.name || user.displayName || "Not provided"}
-              </p>
+            <h1 className="text-2xl font-serif font-bold mb-1">
+              {user?.name || "User"}
+            </h1>
+            <p className="text-gray-600 mb-4">{user?.email}</p>
+            <p className="text-sm text-gray-500 mb-3">
+              Member since
+              {user?.metadata?.creationTime
+                ? new Date(user.metadata.creationTime).toLocaleDateString(
+                    "en-US",
+                    { month: "long", year: "numeric" }
+                  )
+                : "December 2024"}
+            </p>
+            <div className="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-xs font-medium mb-6">
+              Active searches: 1
             </div>
-
-            <div className="bg-gray-50 rounded-lg p-4">
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Email
-              </label>
-              <p className="text-gray-900">{user.email || "Not provided"}</p>
-            </div>
-
-            {user.given_name && (
-              <div className="bg-gray-50 rounded-lg p-4">
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  First Name
-                </label>
-                <p className="text-gray-900">{user.given_name}</p>
-              </div>
-            )}
-
-            {user.family_name && (
-              <div className="bg-gray-50 rounded-lg p-4">
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Last Name
-                </label>
-                <p className="text-gray-900">{user.family_name}</p>
-              </div>
-            )}
           </div>
-        </div>
 
-        {/* Account Actions */}
-        <div className="bg-white rounded-xl border border-gray-200 p-6">
-          <h2 className="text-xl font-semibold text-gray-900 mb-6">
-            Account Actions
-          </h2>
-
-          <div className="space-y-4">
-            <button
-              onClick={handleLogout}
-              className="w-full sm:w-auto bg-red-600 hover:bg-red-700 text-white font-medium px-6 py-3 rounded-lg transition-colors"
-            >
-              Sign Out
-            </button>
-          </div>
-        </div>
-
-        {/* App Info */}
-        <div className="bg-white rounded-xl border border-gray-200 p-6 mt-6">
-          <h2 className="text-xl font-semibold text-gray-900 mb-4">
-            About ScoutAI
-          </h2>
-          <p className="text-gray-600 text-sm">
-            ScoutAI helps you find the best talent for your organization using
-            AI-powered search capabilities.
-          </p>
-          <p className="text-gray-500 text-xs mt-2">Version 1.0.0</p>
+          <button
+            onClick={handleLogout}
+            className="bg-black cursor-pointer text-white px-6 py-2 text-sm font-medium rounded-full hover:bg-gray-800 transition"
+          >
+            Sign Out
+          </button>
         </div>
       </div>
     </div>

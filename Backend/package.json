@@ -4,18 +4,26 @@
   "main": "index.js",
   "type": "module",
   "license": "MIT",
+  "scripts": {
+    "start": "node index.js",
+    "dev": "bun run --watch index.js"
+  },
   "dependencies": {
     "@genkit-ai/firebase": "^1.10.0",
     "@genkit-ai/googleai": "^1.10.0",
     "@prisma/client": "^6.8.2",
     "axios": "^1.9.0",
+    "cookie-parser": "^1.4.7",
+    "cors": "^2.8.5",
     "dotenv": "^16.5.0",
     "express": "^5.1.0",
     "firebase-admin": "^13.4.0",
     "firestore": "^1.1.6",
     "genkit": "^1.10.0",
+    "googleapis": "^149.0.0",
     "init": "^0.1.2",
     "json5": "^2.2.3",
+    "jsonwebtoken": "^9.0.2",
     "mongodb": "^6.16.0",
     "nodemon": "^3.1.10",
     "prisma": "^6.8.2"

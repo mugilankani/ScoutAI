@@ -8,47 +8,30 @@ const Navbar = () => {
   return (
     <nav className="bg-white border-b border-gray-200 px-4 py-3">
       <div className="max-w-7xl mx-auto flex items-center justify-between">
-        {/* Logo */}
-        <Link to="/chat" className="text-2xl font-bold text-gray-900">
+        <Link to="/search" className="text-2xl font-bold text-gray-900">
           ScoutAI
         </Link>
-
-        {/* Navigation Links */}
-        <div className="flex items-center gap-6">
+        <div className="flex items-center gap-2">
           <Link
-            to="/chat"
-            className={`text-sm font-medium transition-colors ${
-              location.pathname === "/chat"
-                ? "text-blue-600"
-                : "text-gray-600 hover:text-gray-900"
+            to="/search"
+            className={`px-4 py-2 rounded-full text-sm font-medium ${
+              location.pathname === "/search"
+                ? "bg-black text-white"
+                : "bg-gray-100 text-gray-700 hover:bg-gray-200 hover:text-gray-900"
             }`}
           >
             Search
           </Link>
           <Link
             to="/settings"
-            className={`text-sm font-medium transition-colors ${
+            className={`px-4 py-2 rounded-full text-sm font-medium ${
               location.pathname === "/settings"
-                ? "text-blue-600"
-                : "text-gray-600 hover:text-gray-900"
+                ? "bg-black text-white"
+                : "bg-gray-100 text-gray-700 hover:bg-gray-200 hover:text-gray-900"
             }`}
           >
             Settings
           </Link>
-
-          {/* User Menu */}
-          {user && (
-            <div className="flex items-center gap-3">
-              <img
-                src={
-                  user.avatar ||
-                  `https://ui-avatars.com/api/?name=${user.name}&background=6366f1&color=fff`
-                }
-                alt={user.name}
-                className="w-8 h-8 rounded-full"
-              />
-            </div>
-          )}
         </div>
       </div>
     </nav>

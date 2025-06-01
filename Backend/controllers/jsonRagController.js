@@ -3,7 +3,7 @@ import {
   indexJsonFlow,
   retrieveAndGenerateJsonAnswer,
 } from "../service/genkitService.js";
-import { generateFingerprint } from "../utils/candidateUtils.js";
+// import { generateFingerprint } from "../utils/candidateUtils.js";
 import { firestore } from "../config/firebaseAdmin.js";
 
 export const indexJsonController = async (req, res) => {

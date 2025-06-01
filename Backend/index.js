@@ -1,29 +1,38 @@
-import express from 'express';
-import dotenv from 'dotenv';
-import { findCandidatesAndFetchProfiles } from './controllers/hiringControllers.js'; // Ensure correct path and .js extension
+import express from "express";
+import dotenv from "dotenv";
+import cors from "cors";
+import cookieParser from "cookie-parser"; // Added cookie-parser
+import { findCandidatesAndFetchProfiles } from "./controllers/hiringControllers.js";
+import jsonRagRoutes from "./routes/jsonRag.js";
+import authRoutes from "./routes/authRoutes.js"; // Added auth routes
 
-// Load environment variables from .env file
 dotenv.config();
 
 const app = express();
-const PORT = process.env.PORT || 3000; // Use port from .env or default to 3000
+const PORT = process.env.PORT || 3000;
 
-// Middleware to parse JSON request bodies
+// CORS configuration
+app.use(cors({
+  origin: process.env.CLIENT_URL || "http://localhost:5173",
+  credentials: true,
+  optionsSuccessStatus: 200
+}));
+
 app.use(express.json());
+app.use(cookieParser()); // Use cookie-parser middleware
 
-// Define the API endpoint for finding and fetching candidates
-// This is a POST request because we're sending a 'recruiterQuery' in the body
-app.post('/api/candidates/search', findCandidatesAndFetchProfiles);
+// Public routes (auth routes are generally public or have their own checks)
+app.use("/api/auth", authRoutes);
 
-// Basic health check or root route
-app.get('/', (req, res) => {
-  res.send('Welcome to the Candidate Search API!');
+// For now, keeping these unprotected as per original, but you can add firebaseAuthMiddleware
+app.post("/api/candidates/search", findCandidatesAndFetchProfiles);
+app.use("/api/rag/", jsonRagRoutes);
+
+app.get("/", (req, res) => {
+  res.send("Welcome to the Candidate Search API!");
 });
 
 // Start the server
 app.listen(PORT, () => {
   console.log(`Server running on http://localhost:${PORT}`);
-  console.log('Endpoints available:');
-  console.log(`  POST /api/candidates/search`);
-  console.log(`  GET /`);
 });
