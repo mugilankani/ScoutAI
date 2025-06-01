@@ -937,7 +937,37 @@ Use this tool to objectively compare and prioritize candidates for a particular 
     ),
   },
   async ({ candidates, input }) => {
-    console.log("scoringCriteria input:", { candidates, input });
+    console.log("scoringCriteria input received:", {
+      candidatesLength: candidates?.length || 0,
+      inputLength: input?.length || 0,
+      inputType: typeof input,
+      candidatesType: Array.isArray(candidates) ? "array" : typeof candidates,
+    });
+
+    // Handle invalid inputs with meaningful fallbacks
+    if (!candidates || !Array.isArray(candidates) || candidates.length === 0) {
+      console.error("Invalid candidates parameter:", candidates);
+      return {
+        jsonOutput: [
+          {
+            scoring: [
+              {
+                name: "Error",
+                fingerPrint: "error_case",
+                score: 0,
+                WhyHeSuits: "Error: Invalid candidate data received",
+              },
+            ],
+          },
+        ],
+      };
+    }
+
+    if (!input || typeof input !== "string") {
+      console.error("Invalid input parameter:", input);
+      input = "Evaluate candidate suitability based on their profile";
+    }
+
     const system = `
 You are an expert technical recruiter and candidate evaluator. Your job is to objectively score and explain the suitability of each candidate for a given role, based strictly on their provided data and the user's query.
 For each candidate, provide:
@@ -1026,120 +1056,196 @@ export const childrentAgentScoringAndBackground = ai.defineTool(
     ),
   },
   async ({ input, candidates }) => {
-    console.log("childrentAgentForPrescreenMsgAndOutReachMail input:", {
+    console.log("childrentAgentScoringAndBackground input:", {
       input,
-      candidates: candidates,
+      candidatesCount: candidates?.length || 0,
     });
     try {
-      const system = `
-You are a specialized hiring agent responsible for evaluating candidates for a specific job requirement. Your task is to score each candidate for fit and perform background checks using the provided tools. You need to manage the tools and get the results step-by-step, ensuring you gather all necessary data before proceeding to the next step.
+      // Validate inputs before proceeding
+      if (!input || typeof input !== "string") {
+        console.error("Invalid input parameter:", input);
+        throw new Error("Input parameter must be a non-empty string");
+      }
 
+      if (
+        !candidates ||
+        !Array.isArray(candidates) ||
+        candidates.length === 0
+      ) {
+        console.error("Invalid candidates parameter:", candidates);
+        throw new Error("Candidates parameter must be a non-empty array");
+      }
 
-Once you get the scoring results, you can proceed to background checks: and after getting full results, you will combine them and return the final output.
+      // Convert candidates to strings if they're objects
+      const candidateStrings = candidates.map((c) =>
+        typeof c === "string" ? c : JSON.stringify(c)
+      );
+
+      // Manually call the scoring tool first to avoid the undefined issue
+      console.log("Directly calling scoringCriteria");
+      const scoringResults = await scoringCriteria({
+        candidates: candidateStrings,
+        input: input,
+      });
+
+      console.log(
+        "Direct scoringCriteria call result:",
+        scoringResults?.jsonOutput?.length || 0,
+        "results"
+      );
+
+      // Then manually call the background check tool
+      console.log("Directly calling backgroundChecks");
+      const bgCheckResults = await backgroundChecks({
+        candidates: candidateStrings,
+        input: input,
+      });
+
+      console.log(
+        "Direct backgroundChecks call result:",
+        bgCheckResults?.length || 0,
+        "results"
+      );
+
+      // Combine the results
+      const combinedResults = [];
+
+      // Extract scoring data
+      const scoringData = scoringResults?.jsonOutput?.[0]?.scoring || [];
+
+      // Map by fingerprint for easier merging
+      const bgCheckMap = {};
+      if (bgCheckResults && Array.isArray(bgCheckResults)) {
+        for (const check of bgCheckResults) {
+          if (check.fingerPrint) {
+            bgCheckMap[check.fingerPrint] = check.backgroundChecks;
+          }
+        }
+      }
+
+      // Create merged results
+      for (const score of scoringData) {
+        const fingerPrint = score.fingerPrint || "unknown";
+        combinedResults.push({
+          fingerPrint,
+          scoring: [score],
+          backgroundChecks: bgCheckMap[fingerPrint] || {
+            isMatch: false,
+            flagged: ["No background check data available"],
+            summary: "Could not perform background check",
+          },
+        });
+      }
+
+      // If we didn't get any results through direct calls, try with the agent
+      if (combinedResults.length === 0) {
+        const system = `
+You are a specialized hiring agent responsible for evaluating candidates for a specific job requirement. 
+You will work with TWO specific tools in sequence:
+1. scoringCriteria - to score candidates
+2. backgroundChecks - to verify their claims
+
+IMPORTANT: Make sure to pass BOTH required parameters when calling each tool:
+- candidates: a stringified array of candidate objects
+- input: the job requirements as a string
 `;
-      const prompt = `
+        const prompt = `
 Here is the manager's hiring requirement:
 <manager_requirement>
 ${input}
-
 </manager_requirement>
 
-Here are the full details of the candidates:
+Here are the full details of the ${candidateStrings.length} candidates:
 <candidates>
-${candidates}
+${JSON.stringify(candidateStrings, null, 2)}
 </candidates>
 
-You have access to the following tools:
+First call scoringCriteria with BOTH parameters:
+1. candidates: Exactly the candidate data above, passed as an array of strings
+2. input: Exactly the manager requirement from above
 
-1. scoringCriteria
-   Input: { candidates: [<array of candidate JSON strings>], input: "<job description or requirement>" }
-   Output: Returns an array of objects with scoring details for each candidate.
+Then call backgroundChecks with the SAME parameters.
 
-2. backgroundChecks
-   Input: { candidates: [<array of candidate JSON strings>], input: "<job description or requirement>" }
-   Output: Returns an array of objects with background check results for each candidate.
+Example of how to call the tools correctly:
+scoringCriteria({
+  "candidates": [<array of candidate strings>],
+  "input": "<job requirements>"
+})
 
-Follow the ReAct step-by-step pattern, which consists of:
-Thought N: <brief reasoning>
-Action N: <tool name + input>
-Observation N: <tool output or "(mocked output)">
+backgroundChecks({
+  "candidates": [<array of candidate strings>],
+  "input": "<job requirements>"
+})
 
-Follow these steps to complete the hiring process:
-
-1. Apply scoringCriteria to evaluate the candidates' fit for the position.
-2. Conduct backgroundChecks on the candidates.
-
-After each step, take time to properly organize and collect all the data before passing it to the next tool. Don't rush; ensure all information is accurately gathered and processed.
-
-If at any point you discover missing information needed to proceed (for example, no candidates returned by scoringCriteria), revise your query or call "scoringCriteria" again for one you have valid data to continue.
-
-• scoring: { score (0–10), WhyHeSuits (short justification) }
-• backgroundChecks: { isMatch (boolean), flagged (string[]), summary (string) }
-
-Here's an example of the ReAct steps you should follow:
-
-Thought 1: Score the candidates for fit.
-Action 1: scoringCriteria({ candidates: [<candidate JSON strings>], input: "<job description>" })
-Observation 1: [Array of scoring results]
-
-Once you get the scoring results, you can proceed to background checks:
-
-Thought 2: Perform background checks.
-Action 2: backgroundChecks({ candidates: [<candidate JSON strings>], input: "<job description>" })
-Observation 2: [Array of background check results]
-
-Thought 3: Combine all the results and prepare the final output.
-
-Remember to always start by scoring candidates with scoringCriteria, then enrich with backgroundChecks. Return only the final JSON array of candidates as your output.
-
+REMEMBER: You MUST pass both parameters with the exact values shown above.
 `;
-      const { output } = await withRetry(() =>
-        ai.generate({
-          system,
-          prompt,
-          model: gemini25ProPreview0325,
-          tools: [scoringCriteria, backgroundChecks],
-          output: {
-            schema: z.array(
-              z.object({
-                fingerPrint: z
-                  .string()
-                  .describe("Unique identifier for the candidate"),
-                backgroundChecks: z.object({
-                  isMatch: z.boolean(),
-                  flagged: z.array(z.string()),
-                  summary: z.string(),
-                }),
-                scoring: z.array(
-                  z.object({
-                    name: z.string(),
-                    score: z
-                      .number()
-                      .min(0)
-                      .max(10)
-                      .describe("Score out of 10 in float"),
-                    WhyHeSuits: z
-                      .string()
-                      .describe("Why the candidate suits the job"),
-                  })
-                ),
-              })
-            ),
-          },
-        })
-      );
+        const { output } = await withRetry(() =>
+          ai.generate({
+            system,
+            prompt,
+            model: gemini25ProPreview0325,
+            tools: [scoringCriteria, backgroundChecks],
+            output: {
+              schema: z.array(
+                z.object({
+                  fingerPrint: z
+                    .string()
+                    .describe("Unique identifier for the candidate"),
+                  backgroundChecks: z.object({
+                    isMatch: z.boolean(),
+                    flagged: z.array(z.string()),
+                    summary: z.string(),
+                  }),
+                  scoring: z.array(
+                    z.object({
+                      name: z.string(),
+                      score: z
+                        .number()
+                        .min(0)
+                        .max(10)
+                        .describe("Score out of 10 in float"),
+                      WhyHeSuits: z
+                        .string()
+                        .describe("Why the candidate suits the job"),
+                    })
+                  ),
+                })
+              ),
+            },
+          })
+        );
 
-      console.log("Agent flow completed successfully");
-      return output;
+        console.log("ScoringAndBackground agent completed through agent");
+        return output;
+      }
+
+      console.log("ScoringAndBackground agent completed through direct calls");
+      return combinedResults;
     } catch (error) {
-      console.error("Error in agentParentFlow:", error);
-
-      // Return empty array with proper schema structure as fallback
-      return [];
+      console.error("Error in childrentAgentScoringAndBackground:", error);
+      // Return minimal valid data as fallback
+      return [
+        {
+          fingerPrint: "error_case",
+          backgroundChecks: {
+            isMatch: false,
+            flagged: ["Error processing candidate"],
+            summary: `Error occurred: ${error.message}`,
+          },
+          scoring: [
+            {
+              name: "Error",
+              score: 0,
+              WhyHeSuits: `Error occurred: ${error.message}`,
+            },
+          ],
+        },
+      ];
     }
   }
 );
 
+// Similar direct call approach for childrentAgentForPrescreenMsgAndOutReachMail
 export const childrentAgentForPrescreenMsgAndOutReachMail = ai.defineTool(
   {
     name: "childrentAgentForPrescreenMsgAndOutReachMail",
@@ -1167,98 +1273,202 @@ export const childrentAgentForPrescreenMsgAndOutReachMail = ai.defineTool(
   },
   async ({ input, candidates }) => {
     try {
-      const system = `
-You are a specialized hiring assistant AI. Your task is to generate prescreening questions and personalized outreach messages for job candidates based on the manager's hiring requirement and candidate details.
-`;
-      const prompt = `
-You will be provided with two inputs:
+      // Validate inputs before proceeding
+      if (!input || typeof input !== "string") {
+        console.error("Invalid input parameter:", input);
+        throw new Error("Input parameter must be a non-empty string");
+      }
 
+      if (
+        !candidates ||
+        !Array.isArray(candidates) ||
+        candidates.length === 0
+      ) {
+        console.error("Invalid candidates parameter:", candidates);
+        throw new Error("Candidates parameter must be a non-empty array");
+      }
+
+      // Convert candidates to strings if they're objects
+      const candidateStrings = candidates.map((c) =>
+        typeof c === "string" ? c : JSON.stringify(c)
+      );
+
+      console.log(
+        "PrescreenAndOutreach agent starting with",
+        candidateStrings.length,
+        "candidates"
+      );
+
+      // Manually call the prescreening tool first to avoid the undefined issue
+      console.log("Directly calling generatePrescreenQuestions");
+      const questionsResults = await generatePrescreenQuestions({
+        candidates: candidateStrings,
+        input: input,
+      });
+
+      console.log(
+        "Direct generatePrescreenQuestions call result:",
+        questionsResults?.length || 0,
+        "results"
+      );
+
+      // Then manually call the outreach message tool
+      console.log("Directly calling outReachMessage");
+      const outreachResults = await outReachMessage({
+        candidates: candidateStrings,
+        companyDetails: input, // Using input as company details
+      });
+
+      console.log(
+        "Direct outReachMessage call result:",
+        outreachResults?.length || 0,
+        "results"
+      );
+
+      // Combine the results
+      const combinedResults = [];
+
+      // Map by fingerprint for easier merging
+      const questionsMap = {};
+      if (questionsResults && Array.isArray(questionsResults)) {
+        for (const result of questionsResults) {
+          if (result.fingerprint) {
+            questionsMap[result.fingerprint] = {
+              name: result.name,
+              questions: result.questions,
+            };
+          }
+        }
+      }
+
+      const messageMap = {};
+      if (outreachResults && Array.isArray(outreachResults)) {
+        for (const result of outreachResults) {
+          if (result.fingerPrint) {
+            messageMap[result.fingerPrint] = result.message;
+          }
+        }
+      }
+
+      // Collect all fingerprints
+      const allFingerprints = new Set([
+        ...Object.keys(questionsMap),
+        ...Object.keys(messageMap),
+      ]);
+
+      // Create merged results
+      for (const fingerprint of allFingerprints) {
+        const questionData = questionsMap[fingerprint];
+        const message = messageMap[fingerprint];
+
+        if (questionData || message) {
+          combinedResults.push({
+            name: questionData?.name || "Unknown Candidate",
+            fingerprint: fingerprint,
+            questions: questionData?.questions || [
+              "No questions available",
+              "No questions available",
+              "No questions available",
+              "No questions available",
+              "No questions available",
+            ],
+            OutReachmessage: message || "No outreach message available",
+          });
+        }
+      }
+
+      // If we didn't get any results through direct calls, try with the agent
+      if (combinedResults.length === 0) {
+        const system = `
+You are a specialized hiring assistant responsible for creating prescreening questions and outreach messages.
+You will work with TWO specific tools in sequence:
+1. generatePrescreenQuestions - to create tailored questions
+2. outReachMessage - to create personalized messages
+
+IMPORTANT: Make sure to pass BOTH required parameters when calling each tool:
+- candidates: a stringified array of candidate objects
+- input/companyDetails: the job requirements as a string
+`;
+        const prompt = `
 <manager_requirement>
 ${input}
 </manager_requirement>
 
 <candidates_details>
-${candidates}
+${JSON.stringify(candidateStrings, null, 2)}
 </candidates_details>
 
-You have access to two tools to help you complete this task:
+First call generatePrescreenQuestions with BOTH parameters:
+1. candidates: Exactly the candidate data above, passed as an array of strings
+2. input: Exactly the manager requirement from above
 
-1. generatePrescreenQuestions
-   Input: { candidate: [<array of candidate JSON strings>], input: "<job description>" }
-   Output: Returns an array of objects with 5 tailored questions for each candidate.
+Then call outReachMessage with the SAME parameters:
+1. candidates: The same candidate data
+2. companyDetails: The same manager requirement text
 
-2. outReachMessage
-   Input: { candidate: [<array of candidate JSON strings>], companyDetails: "<company details string>" }
-   Output: Returns an object with a personalized outreach message for each candidate.
+Example of how to call the tools correctly:
+generatePrescreenQuestions({
+  "candidates": [<array of candidate strings>],
+  "input": "<job requirements>"
+})
 
-Follow these steps to complete the hiring process:
+outReachMessage({
+  "candidates": [<array of candidate strings>],
+  "companyDetails": "<job requirements>"
+})
 
-1. Generate prescreening questions using generatePrescreenQuestions.
-2. Create personalized outreach messages with outReachMessage.
-
-For each step, use the ReAct (Reasoning and Acting) format:
-
-Thought N: <brief reasoning>
-Action N: <tool name + input>
-Observation N: <tool output>
-
-After completing all steps, output a single JSON array that lists each candidate object. Each candidate object should include:
-
-• prescreening: { questions (string[5]) }
-• outreach: { message (string) }
-
-Here's an example of the ReAct steps you should follow:
-
-Thought 1: Generate prescreen questions.
-Action 1: generatePrescreenQuestions({ candidate: "[<candidate JSON strings>]", input: "<job description>" })
-Observation 1: [Array of prescreen questions]
-
-Thought 2: Generate outreach messages.
-Action 2: outReachMessage({ candidate: "[<candidate JSON strings>]", companyDetails: "<company details string>" })
-Observation 2: [Array of outreach messages]
-
-Thought 3: Combine all the results and prepare the final output.
-
-Remember:
-- Always start by prescreening candidates with generatePrescreenQuestions, then enrich with outReachMessage.
-- Merge results for each candidate at each step.
-- Return only the final JSON array of candidates as your output.
-- If you encounter any issues or missing information, revise your query or call the appropriate tool again until you have valid data to continue.
-
-Begin your process now, starting with Thought 1.
-
+REMEMBER: You MUST pass both parameters with the exact values shown above.
 `;
-      const { output } = await withRetry(() =>
-        ai.generate({
-          system,
-          prompt,
-          model: gemini25ProPreview0325,
-          tools: [generatePrescreenQuestions, outReachMessage],
-          output: {
-            schema: z.array(
-              z.object({
-                name: z.string(),
-                fingerprint: z.string(),
-                questions: z
-                  .array(z.string())
-                  .length(5)
-                  .describe("Prescreening questions for the candidate"),
-                OutReachmessage: z
-                  .string()
-                  .describe("Outreach message for the candidate"),
-              })
-            ),
-          },
-        })
-      );
+        const { output } = await withRetry(() =>
+          ai.generate({
+            system,
+            prompt,
+            model: gemini25ProPreview0325,
+            tools: [generatePrescreenQuestions, outReachMessage],
+            output: {
+              schema: z.array(
+                z.object({
+                  name: z.string(),
+                  fingerprint: z.string(),
+                  questions: z
+                    .array(z.string())
+                    .length(5)
+                    .describe("Prescreening questions for the candidate"),
+                  OutReachmessage: z
+                    .string()
+                    .describe("Outreach message for the candidate"),
+                })
+              ),
+            },
+          })
+        );
 
-      console.log("Agent flow completed successfully");
-      return output;
+        console.log("PrescreenAndOutreach agent completed through agent");
+        return output;
+      }
+
+      console.log("PrescreenAndOutreach agent completed through direct calls");
+      return combinedResults;
     } catch (error) {
-      console.error("Error in agentParentFlow:", error);
-
-      // Return empty array with proper schema structure as fallback
-      return [];
+      console.error(
+        "Error in childrentAgentForPrescreenMsgAndOutReachMail:",
+        error
+      );
+      // Return fallback data
+      return [
+        {
+          name: "Error Case",
+          fingerprint: "error_case",
+          questions: [
+            "Error processing questions: " + error.message,
+            "Please try again later.",
+            "Technical issue occurred.",
+            "System is recovering.",
+            "Contact support if problem persists.",
+          ],
+          OutReachmessage: `We apologize, but an error occurred while processing your profile: ${error.message}`,
+        },
+      ];
     }
   }
 );
@@ -1278,103 +1488,97 @@ export const agentParentFlow = ai.defineFlow(
   },
   async ({ input, candidates }) => {
     try {
-      // const structuredCandidates = await gettingCandidatesDataStructure({
-      //   candidates,
-      // });
-      // console.log("Structured candidates generated:", structuredCandidates);
-      // if (!Array.isArray(structuredCandidates)) {
-      //   console.error(
-      //     "Input 'structuredCandidates' is not an array:",
-      //     structuredCandidates
-      //   );
-      //   return [];
-      // }
-      // console.log("Starting main workflow with candidates:", candidates.length);
+      const structuredCandidates = await gettingCandidatesDataStructure({
+        candidates,
+      });
+      console.log(
+        "Structured candidates generated:",
+        structuredCandidates?.length || 0
+      );
 
-      // // Index each structured candidate in Firestore using indexJsonFlow
-      // if (Array.isArray(structuredCandidates)) {
-      //   for (const candidate of structuredCandidates) {
-      //     try {
-      //       // Generate a document name based on candidate info or fallback to timestamp
-      //       const documentName = `Candidate_doc_${Date.now()}`;
-      //       const result = await indexJsonFlow({
-      //         jsonData: candidate,
-      //         documentName,
-      //       });
-      //       console.log("Indexed candidate:", result);
-      //     } catch (err) {
-      //       console.error("Failed to index candidate:", candidate, err);
-      //     }
-      //   }
-      // }
+      if (
+        !Array.isArray(structuredCandidates) ||
+        structuredCandidates.length === 0
+      ) {
+        console.error("Invalid structuredCandidates:", structuredCandidates);
+        throw new Error("Failed to structure candidate data");
+      }
+
+      console.log("Starting main workflow with candidates:", candidates.length);
+
+      // Index each structured candidate in Firestore using indexJsonFlow
+      for (const candidate of structuredCandidates) {
+        try {
+          // Generate a document name based on candidate info or fallback to timestamp
+          const documentName = `Candidate_doc_${Date.now()}`;
+          const result = await indexJsonFlow({
+            jsonData: candidate,
+            documentName,
+          });
+          console.log("Indexed candidate:", result?.docId || "unknown");
+        } catch (err) {
+          console.error("Failed to index candidate:", err.message);
+        }
+      }
 
       console.log("Starting agentParentFlow with input:", input);
 
       const system = `
-You are a Hiring Manager Agent that follows the ReAct (Reasoning + Acting) style. Your task is to process a manager's hiring requirement, break it down into a sequence of steps, use the provided tools to gather and analyze candidate information, and assemble a final JSON array of candidate profiles with all required fields filled.
+You are a Hiring Manager Agent coordinating a multi-stage hiring process. Your job is to orchestrate three distinct steps:
+1. RETRIEVE: Find candidate profiles matching requirements
+2. EVALUATE: Score candidates and verify their background
+3. ENGAGE: Create prescreening questions and outreach messages
+
+You must follow these steps in exact order and ensure each step completes successfully before proceeding to the next.
 `;
 
       const prompt = `
-Here is the manager's hiring requirement:
 <manager_requirement>
 ${input}
 </manager_requirement>
 
-Follow the ReAct step-by-step pattern, which consists of:
-Thought N: <brief reasoning>
-Action N: <tool name + input>
-Observation N: <tool output or "(mocked output)">
+Your task is to coordinate a comprehensive hiring workflow using three specialized tools in sequence:
 
-You have access to the following tools:
+STEP 1: CANDIDATE RETRIEVAL
+- Use "retrieveAndGenerateJsonAnswer" to find candidates matching requirements
+- This returns initial candidate profiles from our database
+- You MUST get valid candidate data before proceeding
 
-1. retrieveAndGenerateJsonAnswer
-   Input: { query: "<manager requirement or search string>" }
-   Output: Returns an object with input, output, status, and retrievedDocs (array of candidate objects).
+STEP 2: CANDIDATE EVALUATION
+- Use "childrentAgentScoringAndBackground" to score and verify candidates
+- This agent scores each candidate and performs background checks
+- Pass the EXACT same candidates from step 1, properly formatted
+- You MUST get valid evaluation data before proceeding
 
-2. childrentAgentScoringAndBackground
-   Input: { input: "<job description or requirement>", candidates: [<array of candidate JSON strings>] }
-   Output: Returns an array of objects with scoring details and background check results for each candidate.
+STEP 3: CANDIDATE ENGAGEMENT
+- Use "childrentAgentForPrescreenMsgAndOutReachMail" to prepare engagement materials
+- This agent creates prescreening questions and personalized messages
+- Pass the EXACT same candidates from step 1, properly formatted
 
-3. childrentAgentForPrescreenMsgAndOutReachMail
-   Input: { input: "<job description or requirement>", candidates: [<array of candidate JSON strings>] }
-   Output: Returns an array of objects with 5 tailored questions and a personalized outreach message for each candidate.
+CRITICAL DATA HANDLING INSTRUCTIONS:
+- Convert candidates to strings when passing between tools if needed
+- VALIDATE data after each step - never proceed with empty/undefined results
+- If a step fails, retry with corrected formatting before proceeding
+- Maintain the fingerPrint across all steps to ensure proper data merging
+- When combining final data, match records by fingerPrint
 
-Follow these steps to complete the hiring process:
+Follow this exact process using the ReAct format:
 
-1. Use retrieveAndGenerateJsonAnswer to get initial candidate data based on the manager's requirement.
-2. Apply childrentAgentScoringAndBackground to evaluate and perform background checks on the candidates' fit for the position.
-3. Generate prescreening questions and personalized outreach messages with childrentAgentForPrescreenMsgAndOutReachMail.
+Thought 1: I need to retrieve candidate profiles matching the job requirements.
+Action 1: retrieveAndGenerateJsonAnswer({ query: "<precise requirements>" })
+Observation 1: [Check results have valid candidates with data]
 
-After each step, take time to properly organize and collect all the data before passing it to the next tool. Ensure all information is accurately gathered and processed.
+Thought 2: Now I need to evaluate these candidates with scoring and background checks.
+Action 2: childrentAgentScoringAndBackground({ input: "<requirements>", candidates: [<properly formatted candidate data>] })
+Observation 2: [Check results have valid scoring and background data]
 
-If at any point you discover missing information needed to proceed (for example, no candidates returned by retrieve), revise your query or call retrieveAndGenerateJsonAnswer again until you have valid data to continue.
+Thought 3: Now I need to prepare prescreening questions and outreach messages.
+Action 3: childrentAgentForPrescreenMsgAndOutReachMail({ input: "<requirements>", candidates: [<properly formatted candidate data>] })
+Observation 3: [Check results have valid questions and messages]
 
-When you have completed all required steps, output a single JSON array that lists each candidate object, conforming to the CandidateSchema. Each candidate object should include:
+Thought 4: I need to combine all data into the final candidate profiles.
 
-• full_name, email, phone, location, summary, skills, experience_level, projects, certifications, achievements, education, profiles, source
-• fingerPrint (unique ID string)
-• scoring and backgroundChecks: { score (0–10), WhyHeSuits (short justification), isMatch (boolean), flagged (string[]), summary (string) }
-• prescreening and outreach: { questions (string[5]), message (string) }
-
-Here's an example of the ReAct steps you should follow:
-
-Thought 1: I need to retrieve all potential candidate data matching the manager's requirement.
-Action 1: retrieveAndGenerateJsonAnswer({ query: "<manager requirement>" })
-Observation 1: [Array of candidate objects]
-
-Thought 2: Score the candidates for fit and perform background checks.
-Action 2: childrentAgentScoringAndBackground({ input: "<job description or requirement>", candidates: [<array of candidate JSON strings>] })
-Observation 2: [Array of scoring and background check results]
-
-Thought 3: Generate prescreen questions and outreach messages.
-Action 3: childrentAgentForPrescreenMsgAndOutReachMail({ input: "<job description or requirement>", candidates: [<array of candidate JSON strings>] })
-Observation 3: [Array of prescreen questions and outreach messages]
-
-Thought 4: Combine all the results with the exact matching candidate and give the output.
-
-Remember to always start by retrieving candidates with retrieveAndGenerateJsonAnswer, then enrich with childrentAgentScoringAndBackground and childrentAgentForPrescreenMsgAndOutReachMail, merging results by fingerPrint at each step. Return only the final JSON array of candidates as your output.
-
-Begin your process now, starting with Thought 1 and following the ReAct pattern throughout. Ensure you complete all necessary steps before providing the final JSON array output.
+Begin now with step 1, retrieving candidate profiles.
 `;
 
       const { output } = await withRetry(() =>
@@ -1397,9 +1601,7 @@ Begin your process now, starting with Thought 1 and following the ReAct pattern 
       return output;
     } catch (error) {
       console.error("Error in agentParentFlow:", error);
-
-      // Return empty array with proper schema structure as fallback
-      return [];
+      return []; // Return empty array with proper schema structure as fallback
     }
   }
 );

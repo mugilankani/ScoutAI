@@ -2061,3 +2061,20 @@ Begin your process now, starting with Thought 1 and following the ReAct pattern 
   }
 );
  */
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/*
+Multi agent system
+*/
