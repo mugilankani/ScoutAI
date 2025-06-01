@@ -1,73 +1,60 @@
 // genkit-candidate-screener.ts
-import * as genkit from '@genkit-ai/core';
-import { defineFlow } from '@genkit-ai/flow';
-import { text } from '@genkit-ai/ai'; // Assuming your AI model is configured
+import { genkit } from "genkit";
+import { z } from 'zod';
+import dotenv from 'dotenv';
+import { googleAI, gemini25FlashPreview0417 } from "@genkit-ai/googleai"; // Using the import style from the latter code
+
+dotenv.config();
+
+// Initialize Genkit AI
+const ai = genkit({
+  plugins: [
+    googleAI({
+      apiKey: process.env.GEMINI_API_KEY,
+    }),
+  ],
+  model: gemini25FlashPreview0417, // Using a specific model as in the latter code
+});
 
 // Define the schema for the input from the user and SerpApi results
-export interface SerpResultItem {
-  position: number;
-  title: string;
-  link: string;
-  snippet: string;
-  snippet_highlighted_words?: string[]; // Optional, as it might not always be present
-  source: string;
-  // Add other fields you might find useful, e.g., "displayed_link"
-}
+const SerpResultItemSchema = z.object({
+  position: z.number().describe('The position of the search result.'),
+  title: z.string().describe('The title of the search result.'),
+  link: z.string().url().describe('The URL of the search result.'),
+  snippet: z.string().describe('A short summary of the content of the search result.'),
+  snippet_highlighted_words: z.array(z.string()).optional().describe('Optional: Keywords highlighted in the snippet.'),
+  source: z.string().optional().describe('The source of the search result (e.g., LinkedIn, GitHub).'),
+});
 
-export interface CandidateScreeningInput {
-  recruiterQuery: string; // The original plain-English query from the recruiter
-  serpResults: SerpResultItem[]; // An array of relevant organic_results from SerpApi
-}
+const CandidateScreeningInputSchema = z.object({
+  recruiterQuery: z.string().describe('The original plain-English query from the recruiter.'),
+  serpResults: z.array(SerpResultItemSchema).describe('An array of relevant organic_results from SerpApi.'),
+});
 
 // Define the schema for the output (filtered and potentially ranked candidates)
-export interface ScreenedCandidate {
-  link: string;
-  title: string;
-  snippet: string;
-  relevanceScore: number; // A score indicating how well it matches the query (0-100)
-  reasonsForMatch: string; // Explanation of why it's a good match
-  potentialRedFlags?: string; // Optional: Any identified discrepancies or minor mismatches
-}
+const ScreenedCandidateSchema = z.object({
+  link: z.string().describe('The link to the candidate\'s profile or relevant page.'),
+  title: z.string().describe('The candidate\'s job title or headline from the search result.'),
+  snippet: z.string().describe('The original search snippet for the candidate.'),
+  relevanceScore: z.number().min(0).max(100).describe('A score (0-100) indicating how well the candidate matches the query.'),
+  reasonsForMatch: z.string().describe('An explanation of why the candidate is a good match.'),
+  potentialRedFlags: z.string().optional().describe('Optional: Any identified discrepancies or minor mismatches.'),
+});
 
-export interface CandidateScreeningOutput {
-  filteredCandidates: ScreenedCandidate[];
-  summary?: string; // Optional: General insights or notes from the LLM
-}
+const CandidateScreeningOutputSchema = z.object({
+  filteredCandidates: z.array(ScreenedCandidateSchema).describe('An array of screened and relevant candidates.'),
+  summary: z.string().optional().describe('Optional: General insights or notes from the LLM about the candidate pool.'),
+});
 
 // Define the Genkit Flow for candidate screening
-export const screenCandidatesFlow = defineFlow(
+export const screenCandidatesFlow = ai.defineFlow( // Using ai.defineFlow as in the latter code
   {
     name: 'screenCandidates',
-    inputSchema: genkit.z.object({
-      recruiterQuery: genkit.z.string(),
-      serpResults: genkit.z.array(
-        genkit.z.object({
-          position: genkit.z.number(),
-          title: genkit.z.string(),
-          link: genkit.z.string(),
-          snippet: genkit.z.string(),
-          snippet_highlighted_words: genkit.z.array(genkit.z.string()).optional(),
-          source: genkit.z.string(),
-        })
-      ),
-    }),
-    outputSchema: genkit.z.object({
-      filteredCandidates: genkit.z.array(
-        genkit.z.object({
-          link: genkit.z.string(),
-          title: genkit.z.string(),
-          snippet: genkit.z.string(),
-          relevanceScore: genkit.z.number().min(0).max(100),
-          reasonsForMatch: genkit.z.string(),
-          potentialRedFlags: genkit.z.string().optional(),
-        })
-      ),
-      summary: genkit.z.string().optional(),
-    }),
+    description: 'Screens and ranks candidates based on recruiter queries and search results.',
+    inputSchema: CandidateScreeningInputSchema,
+    outputSchema: CandidateScreeningOutputSchema,
   },
-  async (input: CandidateScreeningInput) => {
-    const { recruiterQuery, serpResults } = input;
-
+  async ({ recruiterQuery, serpResults }) => {
     // Construct the context for the LLM using the SerpApi snippets
     const candidatesContext = serpResults.map((result, index) => {
       const highlighted = result.snippet_highlighted_words ? ` (Keywords: ${result.snippet_highlighted_words.join(', ')})` : '';
@@ -133,35 +120,20 @@ export const screenCandidatesFlow = defineFlow(
     `;
 
     try {
-      const llmResponse = await genkit.use(text).generate({
+      const { output } = await ai.generate({ // Using ai.generate as in the latter code
         prompt: prompt,
         config: {
-          temperature: 0.2, // Keep low for structured, focused analysis
-          maxTokens: 2000, // Increase for more detailed analysis and potential red flags
-          responseMimeType: 'application/json', // Force JSON output
+          temperature: 0.2
+        },
+        output: {
+          schema: CandidateScreeningOutputSchema, // Using schema for output validation
         },
       });
 
-      const result = llmResponse.json() as CandidateScreeningOutput;
-
-      // Basic validation of the parsed JSON
-      if (!result || !Array.isArray(result.filteredCandidates)) {
-        console.warn("LLM returned valid JSON but it did not conform to the expected 'filteredCandidates' array.");
-        return { filteredCandidates: [], summary: "Failed to parse screening results." };
-      }
-
-      // Further filter/validate elements within the array if needed (e.g., ensure score is valid)
-      result.filteredCandidates = result.filteredCandidates.filter(c => 
-        typeof c.link === 'string' && c.link.startsWith('http') &&
-        typeof c.title === 'string' && typeof c.snippet === 'string' &&
-        typeof c.relevanceScore === 'number' && c.relevanceScore >= 0 && c.relevanceScore <= 100 &&
-        typeof c.reasonsForMatch === 'string'
-      );
-
-      return result;
+      return output;
 
     } catch (error) {
-      console.error("Error screening candidates:", error);
+      console.error('Error screening candidates:', error);
       throw new Error(`Failed to screen candidates: ${error.message}`);
     }
   }

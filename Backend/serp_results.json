@@ -1,0 +1,102 @@
+{
+  "search_metadata": {
+    "id": "683c43920676dc4839afe10c",
+    "status": "Success",
+    "json_endpoint": "https://serpapi.com/searches/4340e7f2243ad1f2/683c43920676dc4839afe10c.json",
+    "created_at": "2025-06-01 12:12:02 UTC",
+    "processed_at": "2025-06-01 12:12:02 UTC",
+    "google_light_url": "https://www.google.com/search?q=site%3Alinkedin.com%2Fin+Senior+AI+ML+Engineer+LLMs+TensorFlow+PyTorch+GCP+%22open+to+remote%22+-Present&oq=site%3Alinkedin.com%2Fin+Senior+AI+ML+Engineer+LLMs+TensorFlow+PyTorch+GCP+%22open+to+remote%22+-Present&uule=w+CAIQICINVW5pdGVkIFN0YXRlcw&hl=en&gl=us&sourceid=chrome&ie=UTF-8&gbv=1",
+    "raw_html_file": "https://serpapi.com/searches/4340e7f2243ad1f2/683c43920676dc4839afe10c.html",
+    "total_time_taken": 1.94
+  },
+  "search_parameters": {
+    "engine": "google_light",
+    "q": "site:linkedin.com/in Senior AI ML Engineer LLMs TensorFlow PyTorch GCP \"open to remote\" -Present",
+    "location_requested": "United States",
+    "location_used": "United States",
+    "google_domain": "google.com",
+    "hl": "en",
+    "gl": "us",
+    "device": "desktop"
+  },
+  "search_information": {
+    "query_displayed": "site:linkedin.com/in Senior AI ML Engineer LLMs TensorFlow PyTorch GCP \"open to remote\" -Present",
+    "organic_results_state": "Results for exact spelling"
+  },
+  "organic_results": [
+    {
+      "position": 1,
+      "title": "Ngan Huynh - Jersey City, New Jersey, United States - LinkedIn",
+      "link": "https://www.linkedin.com/in/krishuynh2222",
+      "displayed_link": "www.linkedin.com › krishuynh2222",
+      "snippet": "Ngan Huynh. Computer Science Student | Seeking Summer 2025 Internship | Passion About Data | Python | Javascript | SQL ..."
+    },
+    {
+      "position": 2,
+      "title": "Mateo Ocampo - San Isidro, Provincia de Buenos Aires, Argentina",
+      "link": "https://ar.linkedin.com/in/mateo-ocampo-",
+      "displayed_link": "ar.linkedin.com › mateo-ocampo-",
+      "snippet": "Educación: Universidad Torcuato Di Tella · Ubicación: San Isidro · 4 contactos en LinkedIn. Mira el perfil de Mateo Ocampo en LinkedIn, una red profesional ..."
+    },
+    {
+      "position": 3,
+      "title": "Aravind Kumar Devaraneni - Joy-Tech Consultancy | LinkedIn",
+      "link": "https://uk.linkedin.com/in/aravind-rao12/es?trk=people-guest_people_search-card",
+      "displayed_link": "uk.linkedin.com › aravind-rao12",
+      "snippet": "I am a graduated MSc Computer Science student . I worked as a Data Analyst for 2 years… · Joy-Tech Consultancy · University of East London · Manor Park ..."
+    },
+    {
+      "position": 4,
+      "title": "Amirhossein Asadollahzadeh - Pavia, Lombardia, Italia - LinkedIn",
+      "link": "https://it.linkedin.com/in/amirhossein-asadollahzadeh-3aa058149",
+      "displayed_link": "it.linkedin.com › ...",
+      "snippet": "I'm a Data Scientist and AI/ML Engineer with a background in Robotics and Automation. I recently completed my MSc in Industrial Automation Engineering at ..."
+    },
+    {
+      "position": 5,
+      "title": "Pavan kalyan Reddy - Sheffield, England, United Kingdom - LinkedIn",
+      "link": "https://in.linkedin.com/in/pavan-kalyan-reddy-6054382b2",
+      "displayed_link": "in.linkedin.com › ...",
+      "snippet": "MSc computing · Experience: Impel Infotech Private Limited · Education: Sheffield Hallam University · Location: Sheffield · 500+ connections on LinkedIn."
+    },
+    {
+      "position": 6,
+      "title": "Anshul Kumar - Primary Care Support England (PCSE) - LinkedIn",
+      "link": "https://uk.linkedin.com/in/akc29?trk=people-guest_people_search-card",
+      "displayed_link": "uk.linkedin.com › akc29",
+      "snippet": "I have developed a strong foundation in Big Data, leveraging distributed systems like Hadoop and Spark for efficient handling of massive datasets."
+    },
+    {
+      "position": 7,
+      "title": "Sonali Sharma - Rock Solid Solutions | LinkedIn",
+      "link": "https://uk.linkedin.com/in/sonali-sharma-a2a68617",
+      "displayed_link": "uk.linkedin.com › ...",
+      "snippet": "Experience: Rock Solid Solutions · Education: Middlesex University · Location: London · 279 connections on LinkedIn. View Sonali Sharma's profile on ..."
+    },
+    {
+      "position": 8,
+      "title": "Dhananjayan Krishnakumar - Receptionist - Trafford Hall Hotel, BW ...",
+      "link": "https://uk.linkedin.com/in/dhananjayan-krishnakumar-6b8979266",
+      "displayed_link": "uk.linkedin.com › ...",
+      "snippet": "Highly motivated and detailed-oriented candidate passionate about using data to improve business performance and customer experience."
+    },
+    {
+      "position": 9,
+      "title": "Nikita Y. - Liverpool, England, United Kingdom | Professional Profile",
+      "link": "https://in.linkedin.com/in/ynikita?trk=public_profile_project_contributor-image",
+      "displayed_link": "in.linkedin.com › ynikita",
+      "snippet": "Location: Liverpool · 461 connections on LinkedIn. View Nikita Y.'s profile on LinkedIn, a professional community of 1 billion members."
+    },
+    {
+      "position": 10,
+      "title": "Ilampirai Ramamurthy - India | Professional Profile - LinkedIn",
+      "link": "https://in.linkedin.com/in/ilampirai-ramamurthy-778795228",
+      "displayed_link": "in.linkedin.com › ilampirai-ramamurthy-778795228",
+      "snippet": "Actively seeking opportunities, I am open to remote roles or positions based in Coimbatore. Passionate about continuous learning, I aim to integrate my ..."
+    }
+  ],
+  "serpapi_pagination": {
+    "current": 1,
+    "next": "https://serpapi.com/search.json?device=desktop&engine=google_light&gl=us&google_domain=google.com&hl=en&location=United+States&q=site%3Alinkedin.com%2Fin+Senior+AI+ML+Engineer+LLMs+TensorFlow+PyTorch+GCP+%22open+to+remote%22+-Present&start=10"
+  }
+}

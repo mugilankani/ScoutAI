@@ -1,61 +1,53 @@
 // genkit-multi-payload-generator.ts
-import * as genkit from '@genkit-ai/core';
-import { defineFlow } from '@genkit-ai/flow';
-import { text } from '@genkit-ai/ai'; // Assuming your AI model is configured
+import { genkit } from "genkit";
+import { z } from 'zod';
+import dotenv from 'dotenv';
+import { googleAI, gemini25FlashPreview0417 } from "@genkit-ai/googleai";
+
+dotenv.config();
+
+const ai = genkit({
+  plugins: [
+    googleAI({
+      apiKey: process.env.GEMINI_API_KEY,
+    }),
+  ],
+  model: gemini25FlashPreview0417,
+});
 
 // Define the schema for the input and output
-export interface MultiPayloadInput {
-  recruiterQuery: string; // e.g., "Find senior Gen-AI engineers with LangChain + RAG experience in Europe, open to contract work"
-}
+const SerpApiLocationPayloadSchema = z.object({
+  q: z.string().describe('Query string for the SerpApi Locations API.'),
+});
 
-export interface SerpApiLocationPayload {
-  q: string;
-}
+const SerpApiSearchPayloadSchema = z.object({
+  engine: z.union([z.literal('google_light'), z.literal('google')]).describe('Search engine to use (e.g., "google_light").'),
+  q: z.string().describe('The clean search query string, with no quotes around keywords.'),
+  location: z.string().optional().describe('Specific location for the search, optional. Used for precise city/state/region targeting.'),
+  google_domain: z.string().optional().describe('Google domain to use (e.g., "google.com", "google.co.in").'),
+  hl: z.string().optional().describe('Language code (e.g., "en", "fr").'),
+  gl: z.string().optional().describe('Country code (e.g., "us", "in", "de").'),
+  api_key: z.string().optional().describe('API key for SerpApi, passed externally.'),
+});
 
-export interface SerpApiSearchPayload {
-  engine: "google_light" | "google";
-  q: string; // The search query string, no quotes around keywords
-  location?: string; // Specific location for the search, optional
-  google_domain?: string; // e.g., "google.com"
-  hl?: string; // Language code (e.g., "en")
-  gl?: string; // Country code (e.g., "us")
-  api_key?: string; // Will be passed externally, include in type for clarity
-}
+const MultiPayloadInputSchema = z.object({
+  recruiterQuery: z.string().describe('The recruiter’s natural language query (e.g., "Find senior Gen-AI engineers with LangChain + RAG experience in Europe, open to contract work").'),
+});
 
-export interface MultiPayloadOutput {
-  location: SerpApiLocationPayload[];
-  serp: SerpApiSearchPayload[];
-}
+const MultiPayloadOutputSchema = z.object({
+  location: z.array(SerpApiLocationPayloadSchema).describe('Array of SerpApi Locations API payloads, or an empty array if not applicable.'),
+  serp: z.array(SerpApiSearchPayloadSchema).describe('Array of SerpApi search payloads.'),
+});
 
 // Define the Genkit Flow
-export const generateMultiPayloadsFlow = defineFlow(
+export const generateMultiPayloadsFlow = ai.defineFlow(
   {
     name: 'generateMultiPayloads',
-    inputSchema: genkit.z.object({
-      recruiterQuery: genkit.z.string(),
-    }),
-    outputSchema: genkit.z.object({
-      location: genkit.z.array(
-        genkit.z.object({
-          q: genkit.z.string(),
-        })
-      ),
-      serp: genkit.z.array(
-        genkit.z.object({
-          engine: genkit.z.union([genkit.z.literal("google_light"), genkit.z.literal("google")]),
-          q: genkit.z.string(),
-          location: genkit.z.string().optional(),
-          google_domain: genkit.z.string().optional(),
-          hl: genkit.z.string().optional(),
-          gl: genkit.z.string().optional(),
-          api_key: genkit.z.string().optional(),
-        })
-      ),
-    }),
+    description: 'Generates SerpApi search and location payloads from a recruiter query.',
+    inputSchema: MultiPayloadInputSchema,
+    outputSchema: MultiPayloadOutputSchema,
   },
-  async (input: MultiPayloadInput) => {
-    const { recruiterQuery } = input;
-
+  async ({ recruiterQuery }) => {
     // The comprehensive prompt for the LLM
     const prompt = `
       You are an expert search query generator for a talent acquisition platform, specifically designed to create JSON payloads for the SerpApi Google search engine. Your task is to transform a recruiter's natural language request into a structured JSON response that includes:
@@ -204,48 +196,19 @@ export const generateMultiPayloadsFlow = defineFlow(
     `;
 
     try {
-      const llmResponse = await genkit.use(text).generate({
+      const { output } = await ai.generate({
         prompt: prompt,
         config: {
-          temperature: 0.1, // Even lower temp for stricter adherence to JSON
-          maxTokens: 1500,  // Increased max tokens for more complex output
-          // responseMimeType: 'application/json' // If your LLM provider/Genkit supports this for stricter JSON
+          temperature: 0.1
+        },
+        output: {
+          schema: MultiPayloadOutputSchema,
         },
       });
 
-      const responseText = llmResponse.text();
-      
-      let resultPayload: MultiPayloadOutput;
-      try {
-        resultPayload = JSON.parse(responseText) as MultiPayloadOutput;
-      } catch (parseError) {
-        console.error("Failed to parse LLM response as JSON. Response:", responseText, "Error:", parseError);
-        // Robust fallback: Attempt to find the main JSON object
-        const jsonMatch = responseText.match(/{\s*"location":[^]*"serp":[^]*}/s);
-        if (jsonMatch && jsonMatch[0]) {
-          try {
-            resultPayload = JSON.parse(jsonMatch[0]) as MultiPayloadOutput;
-          } catch (fallbackParseError) {
-            console.error("Fallback JSON parsing failed:", fallbackParseError);
-            throw new Error("LLM did not return valid JSON and fallback failed.");
-          }
-        } else {
-          throw new Error("LLM did not return a valid JSON object with 'location' and 'serp' keys.");
-        }
-      }
-
-      // Basic validation for the top-level keys
-      if (!resultPayload || !Array.isArray(resultPayload.location) || !Array.isArray(resultPayload.serp)) {
-        console.warn("LLM did not return the expected top-level 'location' and 'serp' arrays. Returning empty.");
-        return { location: [], serp: [] };
-      }
-
-      // Further validation for 'serp' array items (optional, but good practice)
-      resultPayload.serp = resultPayload.serp.filter(p => typeof p === 'object' && 'q' in p && 'engine' in p);
-
-      return resultPayload;
+      return output;
     } catch (error) {
-      console.error("Error generating SerpApi payloads:", error);
+      console.error('Error generating SerpApi payloads:', error);
       throw new Error(`Failed to generate SerpApi payloads: ${error.message}`);
     }
   }
