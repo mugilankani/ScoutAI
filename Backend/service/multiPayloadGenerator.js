@@ -52,7 +52,7 @@ export const generateMultiPayloadsFlow = ai.defineFlow(
     const prompt = `
       You are an expert search query generator for a talent acquisition platform, specifically designed to create JSON payloads for the SerpApi Google search engine. Your task is to transform a recruiter's natural language request into a structured JSON response that includes:
 
-      1.  A SerpApi Locations API payload (when a specific city/state/region is provided), and
+      1.  A SerpApi Locations API payload (when a specific city/state/region is provided) LIMIT TO 3 LOCATIONS, and
       2.  A list of SerpApi search payloads targeting LinkedIn, GitHub, or Stack Overflow profiles.
 
       **Instructions:**
@@ -71,6 +71,8 @@ export const generateMultiPayloadsFlow = ai.defineFlow(
               * The 'location' array should be **empty**.
               * Use the country directly in the 'gl' (geographical location) field of the SerpApi search payloads where appropriate. For "Europe," generate payloads for key countries like Germany, France, UK, Netherlands, etc., setting their respective 'gl' and 'google_domain'.
 
+      CHECK FOR ONLY ONE LOCATION AND GET THE ONE LOCATION AND GIVE THAT ONLY, GIVE ONE LOCATION. 
+      MAX THREE LOCATIONS, IF THERE ARE MORE THAN THREE LOCATIONS, THEN GIVE AND LIMIT ONLY THREE LOCATIONS.
       3.  **Generate 5–10 Distinct SerpApi Search Payloads (for the 'serp' array):**
           * Each payload MUST be a JSON object with this structure:
               \`\`\`json
@@ -192,6 +194,7 @@ export const generateMultiPayloadsFlow = ai.defineFlow(
     `;
 
     try {
+      console.log('Generating SerpApi payloads for recruiter query:', recruiterQuery);
       const { output } = await ai.generate({
         prompt: prompt,
         config: {
@@ -201,6 +204,7 @@ export const generateMultiPayloadsFlow = ai.defineFlow(
           schema: MultiPayloadOutputSchema,
         },
       });
+      console.log('Generated SerpApi payloads successfully:', output);
 
       return output;
     } catch (error) {

@@ -1,33 +1,33 @@
 {
   "search_metadata": {
-    "id": "683c8d9b6c3283f457c772a0",
+    "id": "683c7ec4217ade108c54adf7",
     "status": "Success",
-    "json_endpoint": "https://serpapi.com/searches/d772c2a52383eef2/683c8d9b6c3283f457c772a0.json",
-    "created_at": "2025-06-01 17:27:55 UTC",
-    "processed_at": "2025-06-01 17:27:55 UTC",
-    "google_light_url": "https://www.google.com/search?q=site%3Alinkedin.com%2Fin+open+to+work+Senior+AI+ML+Engineer+LLMs+New+York+remote+-Present&oq=site%3Alinkedin.com%2Fin+open+to+work+Senior+AI+ML+Engineer+LLMs+New+York+remote+-Present&uule=w+CAIQICIWTmV3IFlvcmssVW5pdGVkIFN0YXRlcw&sourceid=chrome&ie=UTF-8&gbv=1",
-    "raw_html_file": "https://serpapi.com/searches/d772c2a52383eef2/683c8d9b6c3283f457c772a0.html",
-    "total_time_taken": 1.65
+    "json_endpoint": "https://serpapi.com/searches/3f9422d2bf9252d2/683c7ec4217ade108c54adf7.json",
+    "created_at": "2025-06-01 16:24:36 UTC",
+    "processed_at": "2025-06-01 16:24:36 UTC",
+    "google_light_url": "https://www.google.com/search?q=site%3Alinkedin.com%2Fin+AI+ML+Engineer+GCP+deployment+remote+New+York+-Present&oq=site%3Alinkedin.com%2Fin+AI+ML+Engineer+GCP+deployment+remote+New+York+-Present&uule=w+CAIQICIWTmV3IFlvcmssVW5pdGVkIFN0YXRlcw&sourceid=chrome&ie=UTF-8&gbv=1",
+    "raw_html_file": "https://serpapi.com/searches/3f9422d2bf9252d2/683c7ec4217ade108c54adf7.html",
+    "total_time_taken": 1.4
   },
   "search_parameters": {
     "engine": "google_light",
-    "q": "site:linkedin.com/in open to work Senior AI ML Engineer LLMs New York remote -Present",
+    "q": "site:linkedin.com/in AI ML Engineer GCP deployment remote New York -Present",
     "location_requested": "New York, United States",
     "location_used": "New York,United States",
     "google_domain": "google.com",
     "device": "desktop"
   },
   "search_information": {
-    "query_displayed": "site:linkedin.com/in open to work Senior AI ML Engineer LLMs New York remote -Present",
+    "query_displayed": "site:linkedin.com/in AI ML Engineer GCP deployment remote New York -Present",
     "organic_results_state": "Results for exact spelling"
   },
   "organic_results": [
     {
       "position": 1,
-      "title": "Daniel T. - LinkedIn",
-      "link": "https://www.linkedin.com/in/danielztang",
-      "displayed_link": "www.linkedin.com › danielztang",
-      "snippet": "Experience: LinkedIn · Education: Syracuse University · Location: San Francisco Bay Area · 500+ connections on LinkedIn. View Daniel T.'s profile on ..."
+      "title": "Sean Brady - New York, New York, United States | Professional Profile",
+      "link": "https://www.linkedin.com/in/seanbmcse",
+      "displayed_link": "www.linkedin.com › seanbmcse",
+      "snippet": "Self-taught Linux System Engineer with 23+ years of experience delivering secure, scalable, and highly available infrastructure across Linux, UNIX, ..."
     },
     {
       "position": 2,
@@ -38,63 +38,63 @@
     },
     {
       "position": 3,
-      "title": "Ian Fukushima - Senior Machine Learning Engineer - LinkedIn",
-      "link": "https://br.linkedin.com/in/ian-fukushima",
-      "displayed_link": "br.linkedin.com › ian-fukushima",
-      "snippet": "I'm a Machine Learning Engineer and Data Scientist, specialized in developing and deploying AI and ML solutions, including Large Language Models (LLMs) and ..."
+      "title": "Zhengxu Wang - Syracuse, New York, United States - LinkedIn",
+      "link": "https://www.linkedin.com/in/zhengxu-wang-539607107",
+      "displayed_link": "www.linkedin.com › zhengxu-wang-539607107",
+      "snippet": "Video Management and analysis system project, using network cameras for quick facial recognition • Designed and developed the database used for storing high ..."
     },
     {
       "position": 4,
-      "title": "Yunis Johnson - United States | Professional Profile | LinkedIn",
-      "link": "https://www.linkedin.com/in/yunis-johnson-797b19335",
+      "title": "Ankush Goyal | Professional Profile - LinkedIn",
+      "link": "https://www.linkedin.com/in/ankush-goyal-0240522a4?trk=people-guest_people_search-card",
       "displayed_link": "www.linkedin.com › ...",
-      "snippet": "As a Senior AI/ML Engineer and Data Scientist with over 8 years of transformative experience, I specialize in the intersection of machine learning, ..."
+      "snippet": "Location: 10019 · 1 connection on LinkedIn. View Ankush Goyal's profile on LinkedIn, a professional community of 1 billion members."
     },
     {
       "position": 5,
-      "title": "Wei Q. - JPMorgan Chase & Co. - LinkedIn",
-      "link": "https://www.linkedin.com/in/wei-qiu-083271182",
-      "displayed_link": "www.linkedin.com › wei-qiu-083271182",
-      "snippet": "Experience: JPMorgan Chase & Co. · Education: UC Irvine · Location: Plano · 218 connections on LinkedIn. View Wei Q.'s profile on LinkedIn, a professional ..."
+      "title": "Manish C. - New York, New York, United States | Professional Profile",
+      "link": "https://www.linkedin.com/in/manishcg",
+      "displayed_link": "www.linkedin.com › manishcg",
+      "snippet": "Manish is a full stack software engineer with solid experience across DevOps and Cloud platforms like AWS, Azure and GCP. Skilled in Python, Java, ..."
     },
     {
       "position": 6,
-      "title": "John N. - Senior Software Engineer - LinkedIn",
-      "link": "https://br.linkedin.com/in/johnnichev",
-      "displayed_link": "br.linkedin.com › johnnichev",
-      "snippet": "Specializing in AI and machine learning innovations. Proficient in JavaScript/TypeScript, Python, ReactJS, and NodeJS. Played a pivotal role in dozens of ..."
+      "title": "Anuj A. - New York, United States | Professional Profile - LinkedIn",
+      "link": "https://www.linkedin.com/in/anuj-attri",
+      "displayed_link": "www.linkedin.com › anuj-attri",
+      "snippet": "AI Engineer | Applied ML | M.S. C.E. @NYU · Engineer by training, builder by obsession. Recently finished my Master's in Computer Engineering at NYU, ..."
     },
     {
       "position": 7,
-      "title": "Rahul Singhal - New York, New York, United States - LinkedIn",
-      "link": "https://in.linkedin.com/in/rahulsinghal1904?trk=people-guest_people_search-card",
-      "displayed_link": "in.linkedin.com › rahulsinghal1904",
-      "snippet": "SWE: AI/ML Engineer. AXA. Aug 2022 - Jul 2023 1 year. • Automated 15+ financial modeling pipelines using Python, JAX, and Airflow, integrating model drift ..."
+      "title": "Justin Lad - Syracuse, New York, United States | Professional Profile",
+      "link": "https://www.linkedin.com/in/jlad521",
+      "displayed_link": "www.linkedin.com › jlad521",
+      "snippet": "I have over three years of experience in developing, deploying, and supporting machine learning solutions in a fast-paced and collaborative environment."
     },
     {
       "position": 8,
-      "title": "Alexis Cheung Ho - Workday | LinkedIn",
-      "link": "https://www.linkedin.com/in/alexis-cheung-ho-b777b1117",
-      "displayed_link": "www.linkedin.com › ...",
-      "snippet": "Experience: Workday · Education: San Jose State University · Location: Fremont · 194 connections on LinkedIn. View Alexis Cheung Ho's profile on LinkedIn, ..."
+      "title": "Daniel T. - LinkedIn",
+      "link": "https://www.linkedin.com/in/danielztang",
+      "displayed_link": "www.linkedin.com › danielztang",
+      "snippet": "Experience: LinkedIn · Education: Syracuse University · Location: San Francisco Bay Area · 500+ connections on LinkedIn. View Daniel T.'s profile on ..."
     },
     {
       "position": 9,
-      "title": "Kevin Chiang - Amazon Web Services (AWS) - LinkedIn",
-      "link": "https://ca.linkedin.com/in/kc310",
-      "displayed_link": "ca.linkedin.com › ...",
-      "snippet": "Experience: Amazon Web Services (AWS) · Education: University of Southern California · Location: Greater Vancouver Metropolitan Area · 500+ connections on ..."
+      "title": "Balu Koduru - United States | Professional Profile - LinkedIn",
+      "link": "https://in.linkedin.com/in/balu-koduru",
+      "displayed_link": "in.linkedin.com › balu-koduru",
+      "snippet": "... AI/ML Engineer with 4+ years of experience designing and deploying production-ready AI systems across Generative AI, NLP, and traditional ML domains. I ..."
     },
     {
       "position": 10,
-      "title": "Frank Williams - Wayfair | LinkedIn",
-      "link": "https://www.linkedin.com/in/frank-williams-461082186",
-      "displayed_link": "www.linkedin.com › frank-williams-461082186",
-      "snippet": "Data Scientist with a passion for solving business problems. Experience in applied… · Experience: Wayfair · Education: Carnegie Mellon University ..."
+      "title": "NA NA - Stevens Institute of Technology - LinkedIn",
+      "link": "https://www.linkedin.com/in/na-na-811532195",
+      "displayed_link": "www.linkedin.com › na-na-811532195",
+      "snippet": "Software Engineer with experience in both startup and large financial services firm environments with a background in Python, Java, SQL, Hadoop, and various ..."
     }
   ],
   "serpapi_pagination": {
     "current": 1,
-    "next": "https://serpapi.com/search.json?device=desktop&engine=google_light&google_domain=google.com&location=New+York%2C+United+States&q=site%3Alinkedin.com%2Fin+open+to+work+Senior+AI+ML+Engineer+LLMs+New+York+remote+-Present&start=10"
+    "next": "https://serpapi.com/search.json?device=desktop&engine=google_light&google_domain=google.com&location=New+York%2C+United+States&q=site%3Alinkedin.com%2Fin+AI+ML+Engineer+GCP+deployment+remote+New+York+-Present&start=10"
   }
 }
