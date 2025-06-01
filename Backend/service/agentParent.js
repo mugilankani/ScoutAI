@@ -55,6 +55,7 @@ async function withRetry(
       }
     }
   }
+
   // Second round of retries (longer delay)
   for (
     let fallbackAttempt = 0;
@@ -191,6 +192,32 @@ function cleanUndefinedValues(obj) {
   return obj;
 }
 
+// Add a new function to find existing candidate by fingerprint
+async function findExistingCandidateDocument(fingerprint) {
+  try {
+    console.log(
+      `Checking for existing candidate with fingerprint: ${fingerprint}`
+    );
+    const snapshot = await firestore
+      .collection("json_documents")
+      .where("fingerprint", "==", fingerprint)
+      .limit(1)
+      .get();
+
+    if (snapshot.empty) {
+      console.log("No existing candidate found with this fingerprint");
+      return null;
+    } else {
+      const doc = snapshot.docs[0];
+      console.log(`Found existing candidate document: ${doc.id}`);
+      return doc.id;
+    }
+  } catch (error) {
+    console.error("Error finding existing candidate:", error);
+    return null;
+  }
+}
+
 // JSON embedding and storing function
 async function embedAndStoreJson(jsonString, originalJson, documentName) {
   try {
@@ -201,6 +228,15 @@ async function embedAndStoreJson(jsonString, originalJson, documentName) {
     if (!fingerprint) {
       fingerprint = generateFingerprint(originalJson);
     }
+
+    // Check if candidate already exists in database
+    const existingDocId = await findExistingCandidateDocument(fingerprint);
+
+    // If existing, use that doc ID instead of creating a new one
+    const finalDocId = existingDocId || documentName;
+    console.log(
+      `Using document ID: ${finalDocId} (${existingDocId ? "existing" : "new"})`
+    );
 
     // Clean the original JSON to remove undefined values
     const cleanedJson = cleanUndefinedValues(originalJson);
@@ -214,13 +250,18 @@ async function embedAndStoreJson(jsonString, originalJson, documentName) {
 
     const embedding = embeddingResult[0].embedding;
 
-    const docRef = firestore.collection("json_documents").doc(documentName);
+    const docRef = firestore.collection("json_documents").doc(finalDocId);
 
     // Fetch existing doc to preserve createdAt if present
     let createdAt = FieldValue.serverTimestamp();
     const existingDoc = await docRef.get();
     if (existingDoc.exists && existingDoc.data()?.metadata?.createdAt) {
       createdAt = existingDoc.data().metadata.createdAt;
+      console.log(
+        `Updating existing document ${finalDocId} (created: ${createdAt})`
+      );
+    } else {
+      console.log(`Creating new document ${finalDocId}`);
     }
 
     await docRef.set(
@@ -230,20 +271,23 @@ async function embedAndStoreJson(jsonString, originalJson, documentName) {
         originalData: cleanedJson,
         fingerprint: fingerprint,
         metadata: {
-          documentName,
+          documentName: finalDocId,
           timestamp: FieldValue.serverTimestamp(),
           charCount: jsonString.length,
           source: "json",
           type: "json_document",
           createdAt: createdAt,
           updatedAt: FieldValue.serverTimestamp(),
+          lastModified: new Date().toISOString(),
         },
       },
       { merge: true }
     );
 
     console.log(
-      `✅ JSON document stored/updated in Firestore with ID: ${docRef.id}`
+      `✅ JSON document ${
+        existingDocId ? "updated" : "created"
+      } in Firestore with ID: ${docRef.id}`
     );
     return docRef.id;
   } catch (error) {
@@ -1506,21 +1550,53 @@ export const agentParentFlow = ai.defineFlow(
 
       console.log("Starting main workflow with candidates:", candidates.length);
 
+      // Process and index candidates, tracking new vs updated
+      const processedCandidates = {
+        new: 0,
+        updated: 0,
+        failed: 0,
+      };
+
       // Index each structured candidate in Firestore using indexJsonFlow
       for (const candidate of structuredCandidates) {
         try {
-          // Generate a document name based on candidate info or fallback to timestamp
-          const documentName = `Candidate_doc_${Date.now()}`;
+          // Ensure fingerprint is set
+          if (!candidate.fingerprint && !candidate.fingerPrint) {
+            candidate.fingerprint = generateFingerprint(candidate);
+          }
+
+          // Check for existing record with this fingerprint
+          const fingerprint = candidate.fingerprint || candidate.fingerPrint;
+          const existingDocId = await findExistingCandidateDocument(
+            fingerprint
+          );
+
+          // Use existing doc ID or generate new one
+          const documentName =
+            existingDocId ||
+            `Candidate_doc_${Date.now()}_${Math.random()
+              .toString(36)
+              .substring(2, 7)}`;
+
           const result = await indexJsonFlow({
             jsonData: candidate,
             documentName,
           });
-          console.log("Indexed candidate:", result?.docId || "unknown");
+
+          if (existingDocId) {
+            console.log(`Updated existing candidate: ${existingDocId}`);
+            processedCandidates.updated++;
+          } else {
+            console.log(`Indexed new candidate: ${result?.docId || "unknown"}`);
+            processedCandidates.new++;
+          }
         } catch (err) {
           console.error("Failed to index candidate:", err.message);
+          processedCandidates.failed++;
         }
       }
 
+      console.log("Candidate indexing complete:", processedCandidates);
       console.log("Starting agentParentFlow with input:", input);
 
       const system = `

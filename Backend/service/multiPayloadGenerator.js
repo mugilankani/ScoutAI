@@ -52,7 +52,7 @@ export const generateMultiPayloadsFlow = ai.defineFlow(
     const prompt = `
       You are an expert search query generator for a talent acquisition platform, specifically designed to create JSON payloads for the SerpApi Google search engine. Your task is to transform a recruiter's natural language request into a structured JSON response that includes:
 
-      1.  A SerpApi Locations API payload (when a specific city/state/region is provided), and
+      1.  A SerpApi Locations API payload (when a specific city/state/region is provided) LIMIT TO 3 LOCATIONS, and
       2.  A list of SerpApi search payloads targeting LinkedIn, GitHub, or Stack Overflow profiles.
 
       **Instructions:**
@@ -67,18 +67,18 @@ export const generateMultiPayloadsFlow = ai.defineFlow(
           * **If the location is specific (e.g., "Kochi, Kerala, India", "Paris, France", "Austin, Texas", "Berlin"):**
               * Generate a **single** Locations API payload in the 'location' array.
               * Example: \`{"q": "Kochi, Kerala, India"}\`
-              * For search payloads, use the specific location in the 'location' field if it significantly improves search quality for that query.
           * **If the location is broad (e.g., "India", "Europe", "US", "UK"):**
               * The 'location' array should be **empty**.
               * Use the country directly in the 'gl' (geographical location) field of the SerpApi search payloads where appropriate. For "Europe," generate payloads for key countries like Germany, France, UK, Netherlands, etc., setting their respective 'gl' and 'google_domain'.
 
+      CHECK FOR ONLY ONE LOCATION AND GET THE ONE LOCATION AND GIVE THAT ONLY, GIVE ONE LOCATION. 
+      MAX THREE LOCATIONS, IF THERE ARE MORE THAN THREE LOCATIONS, THEN GIVE AND LIMIT ONLY THREE LOCATIONS.
       3.  **Generate 5–10 Distinct SerpApi Search Payloads (for the 'serp' array):**
           * Each payload MUST be a JSON object with this structure:
               \`\`\`json
               {
                 "engine": "google_light",
                 "q": "Google search query here",
-                "location": "Optional – only if very specific city/state/region to improve search precision",
                 "google_domain": "google.com",
                 "hl": "en",
                 "gl": "us" // Adjust for country based on location or query
@@ -104,7 +104,6 @@ export const generateMultiPayloadsFlow = ai.defineFlow(
           {
             "engine": "google_light",
             "q": "site:linkedin.com/in Senior GenAI Engineer LangChain RAG Kochi",
-            "location": "Kochi, Kerala, India",
             "google_domain": "google.co.in",
             "hl": "en",
             "gl": "in"
@@ -141,7 +140,6 @@ export const generateMultiPayloadsFlow = ai.defineFlow(
           {
             "engine": "google_light",
             "q": "site:linkedin.com/in Generative AI LangChain RAG Germany open to work",
-            "location": "Germany",
             "google_domain": "google.de",
             "hl": "en",
             "gl": "de"
@@ -149,7 +147,6 @@ export const generateMultiPayloadsFlow = ai.defineFlow(
           {
             "engine": "google_light",
             "q": "site:linkedin.com/in AI Engineer LangChain RAG France (python OR tensorflow)",
-            "location": "Paris, France",
             "google_domain": "google.fr",
             "hl": "en",
             "gl": "fr"
@@ -196,6 +193,7 @@ export const generateMultiPayloadsFlow = ai.defineFlow(
     `;
 
     try {
+      console.log('Generating SerpApi payloads for recruiter query:', recruiterQuery);
       const { output } = await ai.generate({
         prompt: prompt,
         config: {
@@ -205,6 +203,7 @@ export const generateMultiPayloadsFlow = ai.defineFlow(
           schema: MultiPayloadOutputSchema,
         },
       });
+      console.log('Generated SerpApi payloads successfully:', output);
 
       return output;
     } catch (error) {

@@ -12,6 +12,7 @@
     "@genkit-ai/firebase": "^1.10.0",
     "@genkit-ai/googleai": "^1.10.0",
     "@prisma/client": "^6.8.2",
+    "apify-client": "^2.12.5",
     "axios": "^1.9.0",
     "cookie-parser": "^1.4.7",
     "cors": "^2.8.5",
