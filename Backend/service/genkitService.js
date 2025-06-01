@@ -1,6 +1,10 @@
 // File: services/genkitService.js
 import { genkit } from "genkit";
-import { googleAI, gemini20Flash, textEmbedding004 } from "@genkit-ai/googleai";
+import {
+  googleAI,
+  gemini25FlashPreview0417,
+  textEmbedding004,
+} from "@genkit-ai/googleai";
 import { promisify } from "util";
 import { exec } from "child_process";
 import { z } from "zod";
@@ -9,6 +13,7 @@ import { defineFirestoreRetriever } from "@genkit-ai/firebase";
 const execAsync = promisify(exec);
 import { firestore } from "../config/firebaseAdmin.js";
 import dotenv from "dotenv";
+import crypto from "crypto";
 dotenv.config();
 // GENKIT SETUP
 const ai = genkit({
@@ -17,7 +22,7 @@ const ai = genkit({
       apiKey: process.env.GEMINI_API_KEY,
     }),
   ],
-  model: gemini20Flash,
+  model: gemini25FlashPreview0417,
 });
 
 export const indexJsonFlow = ai.defineFlow(
@@ -67,10 +72,66 @@ export const indexJsonFlow = ai.defineFlow(
   }
 );
 
+// Fingerprint generation logic (same as in candidateUtils.js)
+function generateFingerprint(candidate) {
+  // Priority: email > linkedin > github
+  const email = candidate?.contactInfo?.email || candidate?.email || "";
+  const linkedin =
+    candidate?.socialInfo?.linkedinUrl || candidate?.profiles?.linkedin || "";
+  const github = candidate?.profiles?.github || "";
+
+  let base = "";
+  if (linkedin) {
+    base = linkedin;
+  } else if (github) {
+    base = github;
+  } else if (email) {
+    base = email;
+  } else {
+    // fallback: hash the JSON string itself
+    base = JSON.stringify(candidate);
+  }
+
+  return crypto.createHash("sha256").update(base).digest("hex");
+}
+
+// Helper function to clean undefined values from object
+function cleanUndefinedValues(obj) {
+  if (obj === null || obj === undefined) {
+    return null;
+  }
+  if (Array.isArray(obj)) {
+    return obj.map(cleanUndefinedValues).filter((item) => item !== undefined);
+  }
+  if (typeof obj === "object") {
+    const cleaned = {};
+    for (const [key, value] of Object.entries(obj)) {
+      if (value !== undefined) {
+        const cleanedValue = cleanUndefinedValues(value);
+        if (cleanedValue !== undefined) {
+          cleaned[key] = cleanedValue;
+        }
+      }
+    }
+    return cleaned;
+  }
+  return obj;
+}
+
 // JSON embedding and storing function
 async function embedAndStoreJson(jsonString, originalJson, documentName) {
   try {
     console.log("Generating embedding for JSON data...");
+
+    // Generate fingerprint if not present
+    let fingerprint = originalJson.fingerprint;
+    if (!fingerprint) {
+      fingerprint = generateFingerprint(originalJson);
+    }
+
+    // Clean the original JSON to remove undefined values
+    const cleanedJson = cleanUndefinedValues(originalJson);
+    cleanedJson.fingerprint = fingerprint;
 
     // Generate embedding for the JSON string
     const embeddingResult = await ai.embed({
@@ -93,8 +154,8 @@ async function embedAndStoreJson(jsonString, originalJson, documentName) {
       {
         embedding: FieldValue.vector(embedding),
         content: jsonString,
-        originalData: originalJson,
-        fingerprint: originalJson.fingerprint,
+        originalData: cleanedJson,
+        fingerprint: fingerprint,
         metadata: {
           documentName,
           timestamp: FieldValue.serverTimestamp(),
@@ -130,7 +191,7 @@ const jsonRetriever = defineFirestoreRetriever(ai, {
 });
 
 // JSON Retrieve and Generate Flow
-export const retrieveAndGenerateJsonAnswer = ai.defineFlow(
+export const retrieveAndGenerateJsonAnswer = ai.defineTool(
   {
     name: "retrieveAndGenerateJsonAnswer",
     description:
@@ -198,36 +259,7 @@ export const retrieveAndGenerateJsonAnswer = ai.defineFlow(
         };
       }
 
-      // Aggregate context from all retrieved documents
-      const aggregatedContext = processedDocs
-        .map((doc, index) => `Document ${index + 1}:\n${doc.content}`)
-        .join("\n\n---\n\n");
-
-      // Generate answer using the context
-      const response = await ai.generate({
-        model: gemini20Flash,
-        prompt: `You are an AI assistant that answers questions based on JSON document content. Use the following JSON documents as context to answer the user's question accurately and comprehensively.
-
-Context from Retrieved JSON Documents:
-${aggregatedContext}
-
-User Question: ${userQuestion}
-
-Instructions:
-- Answer based on the information found in the JSON documents above
-- If the information is not available in the documents, clearly state that
-- Provide specific details when possible
-- If referencing multiple documents, mention which document the information comes from
-
-Answer:`,
-      });
-
-      const answer =
-        response.message?.content?.[0]?.text || "No response generated";
-
       return {
-        input: userQuestion,
-        output: answer,
         status: "success",
         retrievedDocs: processedDocs.map((doc) => ({
           content: doc.content.substring(0, 200) + "...", // Truncate for response size
