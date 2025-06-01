@@ -1,13 +1,13 @@
 {
   "search_metadata": {
-    "id": "683c7ec4217ade108c54adf7",
+    "id": "683c9def49579ade884e63fc",
     "status": "Success",
-    "json_endpoint": "https://serpapi.com/searches/3f9422d2bf9252d2/683c7ec4217ade108c54adf7.json",
-    "created_at": "2025-06-01 16:24:36 UTC",
-    "processed_at": "2025-06-01 16:24:36 UTC",
-    "google_light_url": "https://www.google.com/search?q=site%3Alinkedin.com%2Fin+AI+ML+Engineer+GCP+deployment+remote+New+York+-Present&oq=site%3Alinkedin.com%2Fin+AI+ML+Engineer+GCP+deployment+remote+New+York+-Present&uule=w+CAIQICIWTmV3IFlvcmssVW5pdGVkIFN0YXRlcw&sourceid=chrome&ie=UTF-8&gbv=1",
-    "raw_html_file": "https://serpapi.com/searches/3f9422d2bf9252d2/683c7ec4217ade108c54adf7.html",
-    "total_time_taken": 1.4
+    "json_endpoint": "https://serpapi.com/searches/3a2f4b9355b36ea3/683c9def49579ade884e63fc.json",
+    "created_at": "2025-06-01 18:37:35 UTC",
+    "processed_at": "2025-06-01 18:37:35 UTC",
+    "google_light_url": "https://www.google.com/search?q=site%3Alinkedin.com%2Fin+AI+ML+Engineer+GCP+deployment+remote+New+York+-Present&oq=site%3Alinkedin.com%2Fin+AI+ML+Engineer+GCP+deployment+remote+New+York+-Present&uule=w+CAIQICIWTmV3IFlvcmssVW5pdGVkIFN0YXRlcw&hl=en&sourceid=chrome&ie=UTF-8&gbv=1",
+    "raw_html_file": "https://serpapi.com/searches/3a2f4b9355b36ea3/683c9def49579ade884e63fc.html",
+    "total_time_taken": 0.65
   },
   "search_parameters": {
     "engine": "google_light",
@@ -15,6 +15,7 @@
     "location_requested": "New York, United States",
     "location_used": "New York,United States",
     "google_domain": "google.com",
+    "hl": "en",
     "device": "desktop"
   },
   "search_information": {
@@ -27,7 +28,7 @@
       "title": "Sean Brady - New York, New York, United States | Professional Profile",
       "link": "https://www.linkedin.com/in/seanbmcse",
       "displayed_link": "www.linkedin.com › seanbmcse",
-      "snippet": "Self-taught Linux System Engineer with 23+ years of experience delivering secure, scalable, and highly available infrastructure across Linux, UNIX, ..."
+      "snippet": "Sean Brady. Cloud Systems Engineer | Cloud & Virtualization Architect | Automation Enthusiast | Pursuing AI/ML | Open to New Opportunities. Rockstar Games. New ..."
     },
     {
       "position": 2,
@@ -48,7 +49,7 @@
       "title": "Ankush Goyal | Professional Profile - LinkedIn",
       "link": "https://www.linkedin.com/in/ankush-goyal-0240522a4?trk=people-guest_people_search-card",
       "displayed_link": "www.linkedin.com › ...",
-      "snippet": "Location: 10019 · 1 connection on LinkedIn. View Ankush Goyal's profile on LinkedIn, a professional community of 1 billion members."
+      "snippet": "Ankush Goyal. --. New York, New York, United States. 1 follower 1 connection. See your mutual connections. View mutual connections with Ankush. Sign in. Welcome ..."
     },
     {
       "position": 5,
@@ -95,6 +96,6 @@
   ],
   "serpapi_pagination": {
     "current": 1,
-    "next": "https://serpapi.com/search.json?device=desktop&engine=google_light&google_domain=google.com&location=New+York%2C+United+States&q=site%3Alinkedin.com%2Fin+AI+ML+Engineer+GCP+deployment+remote+New+York+-Present&start=10"
+    "next": "https://serpapi.com/search.json?device=desktop&engine=google_light&google_domain=google.com&hl=en&location=New+York%2C+United+States&q=site%3Alinkedin.com%2Fin+AI+ML+Engineer+GCP+deployment+remote+New+York+-Present&start=10"
   }
 }

@@ -109,10 +109,10 @@ export const findCandidatesAndFetchProfiles = async (req, res) => {
       `Successfully fetched ${fullLinkedInProfiles.length} full LinkedIn profiles from Apify.`
     );
 
-    // Process candidates with the agent parent flow
+    console.log("parsed linked in profile", fullLinkedInProfiles);
     const finalResult = await agentParentFlow({
       input: recruiterQuery,
-      candidates: filteredCandidates,
+      candidates: fullLinkedInProfiles,
     });
 
     // Respond with the comprehensive results: summary, initially screened candidates,
