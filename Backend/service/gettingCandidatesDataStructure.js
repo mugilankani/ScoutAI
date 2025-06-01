@@ -234,28 +234,75 @@ export const gettingCandidatesDataStructure = ai.defineFlow(
     OutputSchema: z.object({}),
   },
   async ({ candidates }) => {
-    console.log("Starting candidate data structure generation with candidates:");
-    
+    console.log(
+      "Starting candidate data structure generation with candidates:",
+      candidates
+    );
+
     const system = `
-You are an expert data processor. Your job is to extract, clean, and organize all available details from multiple LinkedIn-scraped candidate profiles.
-You must convert the raw, possibly messy input into a well-structured JSON object for each candidate, following the provided ProfileSchema.
+You are an expert data processor specializing in candidate profile standardization. Your critical task is to extract, clean, and organize ALL available details from EVERY LinkedIn profile in the input array. 
+
+CRITICAL REQUIREMENTS:
+1. Process ALL candidates in the input array - do not skip any candidates for any reason
+2. Extract and preserve ALL information available for each candidate - nothing should be omitted
+3. Structure each profile according to the ProfileSchema without exception
+4. If information exists in the input but doesn't match a schema field exactly, find the most appropriate field
+
+Your goal is 100% data preservation while ensuring each profile conforms exactly to the required schema and every candidate is in the same consistent format.
 `;
 
     const prompt = `
-Given the following array of raw LinkedIn candidate data, transform each candidate's information into a clean, structured JSON object that matches the ProfileSchema.
+Transform the following array of ${
+      candidates.length
+    } raw LinkedIn candidate profiles into a clean, standardized array of objects that precisely match the ProfileSchema. You MUST process ALL ${
+      candidates.length
+    } candidates.
 
 <Candidates>
 ${JSON.stringify(candidates, null, 2)}
 </Candidates>
 
-Instructions:
-- For each candidate, extract all available and useful information.
-- Organize the data according to the ProfileSchema fields (personalInfo, contactInfo, socialInfo, location, socialUpdates, currentRole, experiences, education, skills, languages, certifications, honorsAndAwards, projects, volunteerExperience, interests, recommendations).
-- Do not omit any valid or useful information present in the input.
-- If a field is missing in the input, leave it undefined or empty as per the schema.
-- Ensure all URLs are valid and all arrays/objects follow the schema structure.
-- Output only valid JSON, using double quotes for all keys and string values, and no trailing commas.
-- Return the result as a single JSON object or array of objects, matching the ProfileSchema.
+STRICT PROCESSING REQUIREMENTS:
+1. Return EXACTLY ${
+      candidates.length
+    } structured profiles - one for each input candidate
+2. Preserve all unique identifiers including: fingerPrint, fingerprint, id, publicIdentifier, or any other field that could serve as a unique identifier
+3. For every profile, populate ALL of these mandatory sections (even if with minimal data):
+   - personalInfo (with at minimum firstName, lastName, and publicIdentifier)
+   - contactInfo (if available)
+   - socialInfo (especially linkedinUrl)
+   - location
+   - currentRole (if available)
+   - experiences
+   - education
+   - skills
+
+4. Do not omit ANY valid information from these optional sections if present:
+   - languages
+   - certifications
+   - honorsAndAwards
+   - projects
+   - volunteerExperience
+   - interests
+   - recommendations
+   - socialUpdates
+
+5. For each array field (experiences, education, skills, etc.) include ALL items from the source data
+
+6. If the input contains fields not explicitly defined in the schema but containing useful information, map them to the closest appropriate schema field
+
+7. Ensure all output is valid JSON with:
+   - Double quotes for all keys and string values
+   - No trailing commas
+   - No undefined values (use null or empty arrays/objects instead)
+   - Proper nesting according to the schema
+
+OUTPUT FORMAT:
+Return an array containing EXACTLY ${
+      candidates.length
+    } profile objects structured according to the schema. Each profile must have at least the mandatory fields populated.
+
+This data will be used directly by multiple tools that require ALL candidate information - incomplete processing will cause downstream failures.
 `;
 
     const { output } = await ai.generate({
