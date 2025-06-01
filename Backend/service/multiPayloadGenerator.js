@@ -104,7 +104,6 @@ export const generateMultiPayloadsFlow = ai.defineFlow(
           {
             "engine": "google_light",
             "q": "site:linkedin.com/in Senior GenAI Engineer LangChain RAG Kochi",
-            "location": "Kochi, Kerala, India",
             "google_domain": "google.co.in",
             "hl": "en",
             "gl": "in"
