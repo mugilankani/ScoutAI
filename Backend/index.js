@@ -5,8 +5,14 @@ import dotenv from "dotenv";
 import cors from "cors";
 import cookieParser from "cookie-parser";
 import { v4 as uuidv4 } from "uuid";
+import path from "path";
+import { fileURLToPath } from 'url';
 import { firestore } from "./config/firebaseAdmin.js";
 import { findCandidatesAndFetchProfiles } from "./controllers/hiringControllers.js";
+
+// Get the directory name for ES modules
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 // Import routes
 import candidateRoutes from "./routes/candidateRoutes.js";
@@ -31,6 +37,9 @@ app.use(
 
 app.use(express.json());
 app.use(cookieParser());
+
+// Serve static files from the backend's dist folder
+app.use(express.static(path.join(__dirname, 'dist')));
 
 // Diagnostic middleware to log all requests
 app.use((req, res, next) => {
@@ -184,11 +193,6 @@ app.get("/api/test", (req, res) => {
   res.json({ message: "API is working!" });
 });
 
-// Root route
-app.get("/", (req, res) => {
-  res.send("Welcome to the Candidate Search API!");
-});
-
 // Manual route for testing suggestions
 app.post("/api/test-suggest", async (req, res) => {
   try {
@@ -203,6 +207,11 @@ app.post("/api/test-suggest", async (req, res) => {
     console.error("Test suggest error:", err);
     res.status(500).json({ error: err.message });
   }
+});
+
+// Catch-all handler: send back React's index.html file for non-API routes
+app.get('*', (req, res) => {
+  res.sendFile(path.join(__dirname, 'dist', 'index.html'));
 });
 
 // Start the server
