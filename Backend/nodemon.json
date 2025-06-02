@@ -1,0 +1,12 @@
+{
+  "watch": ["**/*.js"],
+  "ignore": [
+    "serp_results.json",
+    "serp_results_*.json",
+    "tmp/*",
+    ".tmp/*",
+    "*.log",
+    "node_modules/*"
+  ],
+  "ext": "js,json"
+}

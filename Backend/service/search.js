@@ -1,7 +1,9 @@
 // service/serp-api-client.js
 
-import axios from 'axios';
-import { writeFile } from 'fs/promises';
+import axios from "axios";
+import { writeFile } from "fs/promises";
+import fs from "fs";
+import path from "path";
 // If SerpApiSearchPayload is used in the runtime logic of multiPayloadGenerator.js,
 // then you'd import it. Otherwise, if it's only a type definition, you can
 // rely on the inferred structure in JavaScript.
@@ -21,8 +23,7 @@ export async function executeSerpSearches(
   serpApiKey,
   addFilterPresent = false
 ) {
-
-  searchPayloads = searchPayloads.slice(0, 2)
+  searchPayloads = searchPayloads.slice(0, 1);
   const allOrganicResults = [];
 
   for (const payload of searchPayloads) {
@@ -32,7 +33,9 @@ export async function executeSerpSearches(
     // --- NEW LOGIC START ---
     if (addFilterPresent) {
       currentPayload.q = `${currentPayload.q} -Present`; // Append "-Present" to the query string
-      console.log(`[SerpApiClient] Modifying query: "${payload.q}" to "${currentPayload.q}"`);
+      console.log(
+        `[SerpApiClient] Modifying query: "${payload.q}" to "${currentPayload.q}"`
+      );
     }
     // --- NEW LOGIC END ---
 
@@ -42,50 +45,103 @@ export async function executeSerpSearches(
     console.log(`[SerpApiClient] Executing search for query: ${serpParams.q}`);
 
     try {
-      const response = await axios.get('https://serpapi.com/search', { params: serpParams });
+      const response = await axios.get("https://serpapi.com/search", {
+        params: serpParams,
+      });
 
-      
       // Check if the response contains organic results and if it's an array
-      if (response.data && response.data.organic_results && Array.isArray(response.data.organic_results)) {
+      if (
+        response.data &&
+        response.data.organic_results &&
+        Array.isArray(response.data.organic_results)
+      ) {
         // Map the raw organic_results to a simplified structure (equivalent to SerpResultItem)
         try {
-          await writeFile('serp_results.json', JSON.stringify(response.data, null, 2), 'utf-8');
-          console.log(`[SerpApiClient] Successfully wrote results to serp_results.json`);
+          // Modify the file writing logic to use a non-watched directory
+          const writeResults = (data, query) => {
+            try {
+              // Write to a tmp directory instead of the project root
+              const tmpDir = path.join(process.cwd(), "tmp");
+
+              // Create tmp directory if it doesn't exist
+              if (!fs.existsSync(tmpDir)) {
+                fs.mkdirSync(tmpDir, { recursive: true });
+              }
+
+              const filepath = path.join(
+                tmpDir,
+                `serp_results_${Date.now()}.json`
+              );
+              fs.writeFileSync(filepath, JSON.stringify(data, null, 2));
+              console.log(
+                `[SerpApiClient] Successfully wrote results to ${filepath}`
+              );
+            } catch (error) {
+              console.error(
+                `[SerpApiClient] Failed to write results: ${error.message}`
+              );
+            }
+          };
+          writeResults(response.data, serpParams.q);
         } catch (fileError) {
-          console.error(`[SerpApiClient] Failed to write results to file:`, fileError);
+          console.error(
+            `[SerpApiClient] Failed to write results to file:`,
+            fileError
+          );
         }
-        const results = response.data.organic_results.map(item => ({
+        const results = response.data.organic_results.map((item) => ({
           position: item.position,
           title: item.title,
           link: item.link,
           snippet: item.snippet,
           // Optional field, only include if it exists
-          ...(item.snippet_highlighted_words && { snippet_highlighted_words: item.snippet_highlighted_words }),
+          ...(item.snippet_highlighted_words && {
+            snippet_highlighted_words: item.snippet_highlighted_words,
+          }),
           source: item.source,
         }));
         allOrganicResults.push(...results); // Add results to the collective array
-        console.log(`[SerpApiClient] Successfully fetched ${results.length} results for: ${serpParams.q}`);
+        console.log(
+          `[SerpApiClient] Successfully fetched ${results.length} results for: ${serpParams.q}`
+        );
       } else {
-        console.warn(`[SerpApiClient] No organic results found or unexpected response structure for query: ${serpParams.q}`);
-        console.warn(`[SerpApiClient] Full response data: ${JSON.stringify(response.data)}`);
+        console.warn(
+          `[SerpApiClient] No organic results found or unexpected response structure for query: ${serpParams.q}`
+        );
+        console.warn(
+          `[SerpApiClient] Full response data: ${JSON.stringify(response.data)}`
+        );
       }
     } catch (error) {
       // Handle Axios-specific errors (network issues, bad responses)
       if (axios.isAxiosError(error)) {
-        console.error(`[SerpApiClient] Error fetching results for query '${serpParams.q}': ${error.message}`);
+        console.error(
+          `[SerpApiClient] Error fetching results for query '${serpParams.q}': ${error.message}`
+        );
         if (error.response) {
-          console.error(`[SerpApiClient] SerpApi Response Data: ${JSON.stringify(error.response.data)}`);
-          console.error(`[SerpApiClient] SerpApi Status: ${error.response.status}`);
+          console.error(
+            `[SerpApiClient] SerpApi Response Data: ${JSON.stringify(
+              error.response.data
+            )}`
+          );
+          console.error(
+            `[SerpApiClient] SerpApi Status: ${error.response.status}`
+          );
         }
       } else {
         // Handle any other unexpected errors
-        console.error(`[SerpApiClient] An unexpected error occurred for query '${serpParams.q}':`, error);
+        console.error(
+          `[SerpApiClient] An unexpected error occurred for query '${serpParams.q}':`,
+          error
+        );
       }
       // Continue to the next payload even if one fails, but log the error
     }
   }
 
-  console.log(`[SerpApiClient] Completed all searches. Total organic results collected: ${allOrganicResults.length}`);
+  console.log(
+    `[SerpApiClient] Completed all searches. Total organic results collected: ${allOrganicResults.length}`
+  );
   return allOrganicResults;
 }
 

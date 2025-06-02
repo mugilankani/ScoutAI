@@ -1,101 +1,144 @@
 {
   "search_metadata": {
-    "id": "683c9fc1e3e176bec89c4a83",
+    "id": "683cae42392e0b0dea759c78",
     "status": "Success",
-    "json_endpoint": "https://serpapi.com/searches/75bf3b3ef30f359d/683c9fc1e3e176bec89c4a83.json",
-    "created_at": "2025-06-01 18:45:21 UTC",
-    "processed_at": "2025-06-01 18:45:21 UTC",
-    "google_light_url": "https://www.google.com/search?q=site%3Alinkedin.com%2Fin+Senior+AI+ML+Engineer+LLMs+GCP+New+York+remote+-Present&oq=site%3Alinkedin.com%2Fin+Senior+AI+ML+Engineer+LLMs+GCP+New+York+remote+-Present&uule=w+CAIQICIWTmV3IFlvcmssVW5pdGVkIFN0YXRlcw&hl=en&sourceid=chrome&ie=UTF-8&gbv=1",
-    "raw_html_file": "https://serpapi.com/searches/75bf3b3ef30f359d/683c9fc1e3e176bec89c4a83.html",
-    "total_time_taken": 0.95
+    "json_endpoint": "https://serpapi.com/searches/83b24afd2dba11ea/683cae42392e0b0dea759c78.json",
+    "created_at": "2025-06-01 19:47:14 UTC",
+    "processed_at": "2025-06-01 19:47:14 UTC",
+    "google_light_url": "https://www.google.com/search?q=site%3Alinkedin.com%2Fin+full+stack+engineers&oq=site%3Alinkedin.com%2Fin+full+stack+engineers&uule=w+CAIQICINVW5pdGVkIFN0YXRlcw&hl=en&sourceid=chrome&ie=UTF-8&gbv=1",
+    "raw_html_file": "https://serpapi.com/searches/83b24afd2dba11ea/683cae42392e0b0dea759c78.html",
+    "total_time_taken": 0.9
   },
   "search_parameters": {
     "engine": "google_light",
-    "q": "site:linkedin.com/in Senior AI ML Engineer LLMs GCP New York remote -Present",
-    "location_requested": "New York, United States",
-    "location_used": "New York,United States",
+    "q": "site:linkedin.com/in full stack engineers",
+    "location_requested": "United States",
+    "location_used": "United States",
     "google_domain": "google.com",
     "hl": "en",
     "device": "desktop"
   },
   "search_information": {
-    "query_displayed": "site:linkedin.com/in Senior AI ML Engineer LLMs GCP New York remote -Present",
+    "query_displayed": "site:linkedin.com/in full stack engineers",
     "organic_results_state": "Results for exact spelling"
   },
   "organic_results": [
     {
       "position": 1,
-      "title": "Yunis Johnson - United States | Professional Profile | LinkedIn",
-      "link": "https://www.linkedin.com/in/yunis-johnson-797b19335",
+      "title": "Nick Leon - Full Stack Software Engineer - Booz Allen Hamilton",
+      "link": "https://www.linkedin.com/in/nick-leon-5b338aa3",
       "displayed_link": "www.linkedin.com › ...",
-      "snippet": "As a Senior AI/ML Engineer and Data Scientist with over 8 years of transformative experience, I specialize in the intersection of machine learning, ..."
+      "snippet": "I am proficient in front and backend development with plenty of knowledge and experience with React-Redux, AWS Lambda & API Gateway & EC2, Next-JS, websockets, ..."
     },
     {
       "position": 2,
-      "title": "Ankit Patil - New York City Metropolitan Area | Professional Profile",
-      "link": "https://www.linkedin.com/in/ankit-patil-mscs",
-      "displayed_link": "www.linkedin.com › ankit-patil-mscs",
-      "snippet": "Hi, I'm Ankit Patil, an AI/ML Engineer with over 2 years of experience developing production-grade AI systems that transform how businesses automate decisions ..."
+      "title": "Ethan Bower - Senior Full Stack Engineer - John Hancock | LinkedIn",
+      "link": "https://www.linkedin.com/in/ethan-bower-18a307127",
+      "displayed_link": "www.linkedin.com › ...",
+      "snippet": "About. I am always striving to improve myself in every field relating to electronics. I do this by constantly working on projects just for the sake of learning."
     },
     {
       "position": 3,
-      "title": "Anuj A. - New York, United States | Professional Profile - LinkedIn",
-      "link": "https://www.linkedin.com/in/anuj-attri",
-      "displayed_link": "www.linkedin.com › anuj-attri",
-      "snippet": "AI Engineer | Applied ML | M.S. C.E. @NYU · Engineer by training, builder by obsession. Recently finished my Master's in Computer Engineering at NYU, ..."
+      "title": "Michael Pinnell - Full Stack Engineer - Trello - LinkedIn",
+      "link": "https://www.linkedin.com/in/michaelpinnell",
+      "displayed_link": "www.linkedin.com › michaelpinnell",
+      "snippet": "Help maintain and improve Trello with a team of other engineers. Work mainly in .net and node, though I also dabble in deployment configs and documentation on ..."
     },
     {
       "position": 4,
-      "title": "MN Mahboob - Data Scientist - SD Group - LinkedIn",
-      "link": "https://www.linkedin.com/in/mn-mahboob-b9955b199",
-      "displayed_link": "www.linkedin.com › ...",
-      "snippet": "Data Scientist at SD Group · Experience: SD Group · Location: Washington DC-Baltimore Area. View MN Mahboob's profile on LinkedIn, a professional community ..."
+      "title": "Brian Baron - Full Stack Engineer - Power Flower | LinkedIn",
+      "link": "https://www.linkedin.com/in/brianfbaron",
+      "displayed_link": "www.linkedin.com › brianfbaron",
+      "snippet": "Leveraging modern languages and frameworks, I specialize in developing impactful, user-centric software solutions. My passion for cooperative problem-solving ..."
     },
     {
       "position": 5,
-      "title": "Daniel T. - LinkedIn",
-      "link": "https://www.linkedin.com/in/danielztang",
-      "displayed_link": "www.linkedin.com › danielztang",
-      "snippet": "Experience: LinkedIn · Education: Syracuse University · Location: San Francisco Bay Area · 500+ connections on LinkedIn. View Daniel T.'s profile on ..."
+      "title": "Tyler Bolty - Full Stack Engineer - Bamboo Rose | LinkedIn",
+      "link": "https://www.linkedin.com/in/tyler-bolty",
+      "displayed_link": "www.linkedin.com › tyler-bolty",
+      "snippet": "As a versatile Full Stack Software Engineer, I thrive at the intersection of backend development and full-stack application design."
     },
     {
       "position": 6,
-      "title": "John N. - Senior Software Engineer - LinkedIn",
-      "link": "https://br.linkedin.com/in/johnnichev",
-      "displayed_link": "br.linkedin.com › johnnichev",
-      "snippet": "Specializing in AI and machine learning innovations. Proficient in JavaScript/TypeScript, Python, ReactJS, and NodeJS. Played a pivotal role in dozens of ..."
+      "title": "Kevin I. - Senior Full Stack Engineer (R&D) - Discogs | LinkedIn",
+      "link": "https://www.linkedin.com/in/kevin-iamburg",
+      "displayed_link": "www.linkedin.com › kevin-iamburg",
+      "snippet": "Senior Full Stack Engineer · Full-stack web developer specializing in front-end development, web security, and site reliability engineering."
     },
     {
       "position": 7,
-      "title": "Balu Koduru - United States | Professional Profile - LinkedIn",
-      "link": "https://in.linkedin.com/in/balu-koduru",
-      "displayed_link": "in.linkedin.com › balu-koduru",
-      "snippet": "AI/ML Engineer with 4+ years of experience designing and deploying production-ready AI systems across Generative AI, NLP, and traditional ML domains. I ..."
+      "title": "Alex Howe - Full Stack Engineer - Pursuit | LinkedIn",
+      "link": "https://www.linkedin.com/in/alex-howe-9b1464271",
+      "displayed_link": "www.linkedin.com › ...",
+      "snippet": "Pursuit Fellow | Full stack Web Developer · During my time at Pursuit, I've developed a technical mastery in full stack software engineering."
     },
     {
       "position": 8,
-      "title": "Awais Nazir – Senior Software Engineer – Myant Inc. - LinkedIn",
-      "link": "https://de.linkedin.com/in/awais-nazir-ch",
-      "displayed_link": "de.linkedin.com › awais-nazir-ch",
-      "snippet": "Awais Nazir. Fullstack AI Engineer. Myant Inc. National University of Sciences and Technology (NUST). New York, New York, Vereinigte Staaten von Amerika."
+      "title": "Jordan Alvarado - Full Stack Engineer - Apple via RMSI - LinkedIn",
+      "link": "https://www.linkedin.com/in/jhaagenson",
+      "displayed_link": "www.linkedin.com › jhaagenson",
+      "snippet": "I use my skills to create and deploy Flask APIs, automate complex tasks using Python scripts, and develop Slack apps that enhance the productivity of Apple Maps ..."
     },
     {
       "position": 9,
-      "title": "Pat Damron - System engineer - Boeing Intelligence & Analytics",
-      "link": "https://www.linkedin.com/in/pat-damron-44a213187",
-      "displayed_link": "www.linkedin.com › ...",
-      "snippet": "System engineer at Boeing Intelligence & Analytics · Experience: Boeing Intelligence & Analytics · Location: San Francisco Bay Area · 1 connection on ..."
-    },
-    {
-      "position": 10,
-      "title": "Michael Dailey - Bastrop, Texas, United States | Professional Profile",
-      "link": "https://www.linkedin.com/in/michael--dailey",
-      "displayed_link": "www.linkedin.com › michael--dailey",
-      "snippet": "Senior AI Engineer | Machine Learning | Generative AI | LLM · Experience: TransCrypts · Education: The University of Texas at Austin · Location: Bastrop ..."
+      "title": "Shana Edouard - Full Stack Engineer - Gather | LinkedIn",
+      "link": "https://www.linkedin.com/in/shana-edouard",
+      "displayed_link": "www.linkedin.com › shana-edouard",
+      "snippet": "At Gather, I work as a full-stack engineer, developing the website and mobile apps with Wordpress and React Native. You can read more details about my work in ..."
     }
   ],
+  "knowledge_graph": {
+    "title": "Images",
+    "view_all": [
+      {
+        "image": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSgpISZpEe3Ekus2iHFgkGo9H-KMkPF9_FwPHkq4EouZyn9xEhVIYJEFPP6O9A&s",
+        "link": "https://www.google.com/imgres?imgurl=https://media.licdn.com/dms/image/v2/D4E03AQG3apXsZDmqwg/profile-displayphoto-shrink_200_200/profile-displayphoto-shrink_200_200/0/1707801958178?e%3D2147483647%26v%3Dbeta%26t%3DzS9epRtdPa_2WnVCiOOxCiEskt_9sikKrw2UGBZE6yQ&imgrefurl=https://www.linkedin.com/in/joe-r-peck&h=200&w=200&tbnid=pMna_CjNqBn_4M&q=site:linkedin.com/in+full+stack+engineers&tbnh=104&tbnw=104&usg=AI4_-kSQ9xYdTbs_qjKIAuXO4Jw8aZAWHA&vet=1&docid=JfoM8QezDMMjeM&hl=en&sa=X&ved=2ahUKEwiiyPzP_tCNAxUKQvEDHfI8N7AQ9QF6BAgBEAQ",
+        "serpapi_link": "https://serpapi.com/search.json?device=desktop&engine=google_light&google_domain=google.com&hl=en&location=United+States&q=site%3Alinkedin.com%2Fin+full+stack+engineers"
+      },
+      {
+        "image": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR8nvnsOXaWa9d3nWTGGJzMRNtVvAnFK-16XbWIMQwqds1DstqVtvXhf1rL2C0&s",
+        "link": "https://www.google.com/imgres?imgurl=https://media.licdn.com/dms/image/v2/D5622AQHNOaRhQi3MQQ/feedshare-shrink_800/feedshare-shrink_800/0/1695752378845?e%3D2147483647%26v%3Dbeta%26t%3Dj0EvXB1ysTxlPEFMOqHHKLUpEgFjhZSIqMVLaUWvYYk&imgrefurl=https://www.linkedin.com/in/jessica-myers-226a885b&h=800&w=800&tbnid=lIc5tBi1SmL-5M&q=site:linkedin.com/in+full+stack+engineers&tbnh=143&tbnw=143&usg=AI4_-kRi1WUnFs0a1quPa1bfGqt12Rob3Q&vet=1&docid=tvJhaU3xATaaXM&hl=en&sa=X&ved=2ahUKEwiiyPzP_tCNAxUKQvEDHfI8N7AQ9QF6BAgBEAY",
+        "serpapi_link": "https://serpapi.com/search.json?device=desktop&engine=google_light&google_domain=google.com&hl=en&location=United+States&q=site%3Alinkedin.com%2Fin+full+stack+engineers"
+      },
+      {
+        "image": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT0r4L8Y3SylSG3Hc4B668lPL7i5LV2mQsWQ-LSBdbhlvTjRSMo7-gSeGgtG38&s",
+        "link": "https://www.google.com/imgres?imgurl=https://media.licdn.com/dms/image/v2/D5603AQE6Eqv50ynd0A/profile-displayphoto-shrink_200_200/profile-displayphoto-shrink_200_200/0/1705544512628?e%3D2147483647%26v%3Dbeta%26t%3DlzIEmcJYK-kcj-N62u5pBA5UFcNVSPt9negY1S3Tw3E&imgrefurl=https://www.linkedin.com/in/jhaagenson&h=200&w=200&tbnid=gIM2WJNDhHGg6M&q=site:linkedin.com/in+full+stack+engineers&tbnh=104&tbnw=104&usg=AI4_-kQo83UhfskvhLXKlf7FR80DDSxZyg&vet=1&docid=aBRQoC1No_W3DM&hl=en&sa=X&ved=2ahUKEwiiyPzP_tCNAxUKQvEDHfI8N7AQ9QF6BAgBEAg",
+        "serpapi_link": "https://serpapi.com/search.json?device=desktop&engine=google_light&google_domain=google.com&hl=en&location=United+States&q=site%3Alinkedin.com%2Fin+full+stack+engineers"
+      },
+      {
+        "image": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSOFW9hniPnhrW16sRUfRhZg2Xcan7w0tMI6T72ZKiVCGvXQdVTEElJAybxmA&s",
+        "link": "https://www.google.com/imgres?imgurl=https://media.licdn.com/dms/image/v2/D4E03AQHrbIAvgfLbmA/profile-displayphoto-shrink_200_200/profile-displayphoto-shrink_200_200/0/1683171477900?e%3D2147483647%26v%3Dbeta%26t%3D7NV0fIwDH85KD-epyeyOZ2ZYZAMV0x2HTMeYOCcxPok&imgrefurl=https://www.linkedin.com/in/michaelpinnell&h=200&w=200&tbnid=JADzkpCvQyoFFM&q=site:linkedin.com/in+full+stack+engineers&tbnh=104&tbnw=104&usg=AI4_-kQkWaf-hDF7OwXEeEycq-uEu4UBIA&vet=1&docid=ZcLhen_2Zi6cYM&hl=en&sa=X&ved=2ahUKEwiiyPzP_tCNAxUKQvEDHfI8N7AQ9QF6BAgBEAo",
+        "serpapi_link": "https://serpapi.com/search.json?device=desktop&engine=google_light&google_domain=google.com&hl=en&location=United+States&q=site%3Alinkedin.com%2Fin+full+stack+engineers"
+      },
+      {
+        "image": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTjIojiKPqsaFJyXmWl_bhYstGyJBOqmzh3w3i7ZjPDFJTxPZXFnpX01ozso_w&s",
+        "link": "https://www.google.com/imgres?imgurl=https://media.licdn.com/dms/image/v2/C4E22AQE-kWaK01qmCw/feedshare-shrink_800/feedshare-shrink_800/0/1669919683708?e%3D2147483647%26v%3Dbeta%26t%3Di5YQTfIpnkC20iv-keHiPCDRgfbJ0wjl0fojlhsIqbw&imgrefurl=https://www.linkedin.com/in/luis-reyes-bartolome&h=800&w=800&tbnid=-TUGC6erlgHPlM&q=site:linkedin.com/in+full+stack+engineers&tbnh=143&tbnw=143&usg=AI4_-kT4r7DGKuCy0A6b_5HcQVeGCP6r5w&vet=1&docid=EyA7bz32WGxM1M&hl=en&sa=X&ved=2ahUKEwiiyPzP_tCNAxUKQvEDHfI8N7AQ9QF6BAgBEAw",
+        "serpapi_link": "https://serpapi.com/search.json?device=desktop&engine=google_light&google_domain=google.com&hl=en&location=United+States&q=site%3Alinkedin.com%2Fin+full+stack+engineers"
+      },
+      {
+        "image": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS_GLNwN0z8JCoSTSMBSkyV6LlfQMOGIPF1pk1s0Iv_Mymn08s8Qmdx-yuHR38&s",
+        "link": "https://www.google.com/imgres?imgurl=https://media.licdn.com/dms/image/v2/C5616AQHmK2yvnSOhnw/profile-displaybackgroundimage-shrink_200_800/profile-displaybackgroundimage-shrink_200_800/0/1610421178378?e%3D2147483647%26v%3Dbeta%26t%3DCqhHzmKJy9mVZjGR18HbFexMgmxoFTU1VG6khtn1--E&imgrefurl=https://www.linkedin.com/in/jhaagenson&h=200&w=800&tbnid=fj47-_PuT7f4nM&q=site:linkedin.com/in+full+stack+engineers&tbnh=36&tbnw=143&usg=AI4_-kQEOH890WsgD425GYd59RY99pBnUQ&vet=1&docid=aBRQoC1No_W3DM&hl=en&sa=X&ved=2ahUKEwiiyPzP_tCNAxUKQvEDHfI8N7AQ9QF6BAgBEA4",
+        "serpapi_link": "https://serpapi.com/search.json?device=desktop&engine=google_light&google_domain=google.com&hl=en&location=United+States&q=site%3Alinkedin.com%2Fin+full+stack+engineers"
+      },
+      {
+        "image": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSYk1eWwSlybdCtoni5gOPpoJxA2pkdgKaJRiTgM8hj8ViusaQ3VIeLBvR3DO4&s",
+        "link": "https://www.google.com/imgres?imgurl=https://media.licdn.com/dms/image/v2/C4D22AQEoKRJRQgSOYA/feedshare-shrink_800/feedshare-shrink_800/0/1656042225137?e%3D2147483647%26v%3Dbeta%26t%3Da60V0Ega3oP1yLbSgmx_91LR2ydyF-YEgsTw0ChTSuc&imgrefurl=https://www.linkedin.com/in/hungnguyen720&h=800&w=800&tbnid=OE31DMZkRQNPJM&q=site:linkedin.com/in+full+stack+engineers&tbnh=143&tbnw=143&usg=AI4_-kTB_RtPNyS_ftNEn-fSC9xOoyDhdQ&vet=1&docid=O9t_Igs4MX1_vM&hl=en&sa=X&ved=2ahUKEwiiyPzP_tCNAxUKQvEDHfI8N7AQ9QF6BAgBEBA",
+        "serpapi_link": "https://serpapi.com/search.json?device=desktop&engine=google_light&google_domain=google.com&hl=en&location=United+States&q=site%3Alinkedin.com%2Fin+full+stack+engineers"
+      },
+      {
+        "image": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS_zkBq9GIMT5Eifcdr4eHnNZ0eoss4f13jDV_DcSsJWZVWX5jBFNVpNSzpCMY&s",
+        "link": "https://www.google.com/imgres?imgurl=https://media.licdn.com/dms/image/v2/D4E22AQFU4G7q_Jto5g/feedshare-shrink_800/feedshare-shrink_800/0/1686832026656?e%3D2147483647%26v%3Dbeta%26t%3DWNY3AbEbq9mn4Zthw82Rjp0Ch6mn7g61mh2QuCczjtc&imgrefurl=https://www.linkedin.com/in/tyler-bolty&h=499&w=800&tbnid=DruB4v2Q0EGjiM&q=site:linkedin.com/in+full+stack+engineers&tbnh=89&tbnw=143&usg=AI4_-kSbIdzqWff4YFSbMYlE3P1dkoFsKg&vet=1&docid=1LcfAcGCL9Uk4M&itg=1&hl=en&sa=X&ved=2ahUKEwiiyPzP_tCNAxUKQvEDHfI8N7AQ9QF6BAgBEBI",
+        "serpapi_link": "https://serpapi.com/search.json?device=desktop&engine=google_light&google_domain=google.com&hl=en&location=United+States&q=site%3Alinkedin.com%2Fin+full+stack+engineers"
+      },
+      {
+        "image": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRsWkA5IynHom1N9uaGP82nRi210R23rTDzO1RptlR8KNulMPvpHowrjXndkQ&s",
+        "link": "https://www.google.com/imgres?imgurl=https://media.licdn.com/dms/image/v2/C5603AQF-YFd_y9aDgQ/profile-displayphoto-shrink_200_200/profile-displayphoto-shrink_200_200/0/1652108237199?e%3D2147483647%26v%3Dbeta%26t%3DREhw29WfhujRCF92FP7_sMyRcQSwvQOO_2ektijjKEY&imgrefurl=https://www.linkedin.com/in/rayna-schexnayder-3194306a&h=200&w=200&tbnid=N1T_ZYNnGPtSrM&q=site:linkedin.com/in+full+stack+engineers&tbnh=104&tbnw=104&usg=AI4_-kRvNCwg6gBeJuDsobAuAhQMfYHPCA&vet=1&docid=hL5X5GP8yBN5tM&hl=en&sa=X&ved=2ahUKEwiiyPzP_tCNAxUKQvEDHfI8N7AQ9QF6BAgBEBQ",
+        "serpapi_link": "https://serpapi.com/search.json?device=desktop&engine=google_light&google_domain=google.com&hl=en&location=United+States&q=site%3Alinkedin.com%2Fin+full+stack+engineers"
+      }
+    ]
+  },
   "serpapi_pagination": {
     "current": 1,
-    "next": "https://serpapi.com/search.json?device=desktop&engine=google_light&google_domain=google.com&hl=en&location=New+York%2C+United+States&q=site%3Alinkedin.com%2Fin+Senior+AI+ML+Engineer+LLMs+GCP+New+York+remote+-Present&start=10"
+    "next": "https://serpapi.com/search.json?device=desktop&engine=google_light&google_domain=google.com&hl=en&location=United+States&q=site%3Alinkedin.com%2Fin+full+stack+engineers&start=10"
   }
 }

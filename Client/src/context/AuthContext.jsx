@@ -1,4 +1,4 @@
-import { createContext, useContext, useState, useEffect } from "react";
+import { createContext, useContext, useState, useEffect, useRef } from "react";
 import axiosInstance from "../axios";
 
 const AuthContext = createContext();
@@ -30,6 +30,7 @@ export const useAuth = () => {
 const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null); // { id, name, email, avatarUrl } or null
   const [isLoading, setIsLoading] = useState(true);
+  const authCheckInProgressRef = useRef(false);
 
   /**
    * checkAuthStatus()
@@ -37,6 +38,12 @@ const AuthProvider = ({ children }) => {
    * — If yes, sets `user` to the returned profile object.
    * — If no, leaves `user` as null.
    */  const checkAuthStatus = async () => {
+    if (authCheckInProgressRef.current) {
+      console.log("Auth check already in progress, skipping duplicate call");
+      return;
+    }
+    
+    authCheckInProgressRef.current = true;
     try {
       const resp = await axiosInstance.get("/auth/status");
       // Expect response shape: { user: { id, name, email, avatarUrl } }
@@ -49,6 +56,7 @@ const AuthProvider = ({ children }) => {
       console.error("Error checking auth status:", err);
       setUser(null);
     } finally {
+      authCheckInProgressRef.current = false;
       setIsLoading(false);
     }
   };

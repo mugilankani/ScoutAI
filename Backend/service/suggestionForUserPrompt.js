@@ -12,17 +12,48 @@ const ai = genkit({
   model: gemini25FlashPreview0417,
 });
 
+// Test to make sure Gemini API key is set
+if (!process.env.GEMINI_API_KEY) {
+  console.error("WARNING: GEMINI_API_KEY environment variable is not set!");
+}
+
+// Create a simple mock function for testing when we don't need to call the real API
+export const mockSuggestPromptImprovements = async ({ userPrompt }) => {
+  console.log("Using mock suggestion function");
+  return {
+    suggestions: [
+      "Specify years of experience required",
+      "Include specific technologies or frameworks",
+      "Mention preferred location or time zone",
+      "Add information about expected salary range",
+    ],
+    improvedPrompt: `Looking for ${
+      userPrompt.includes("developer") ? "a developer" : "an expert"
+    } with [specific skills] and [years of experience]. Location: [remote/onsite]. Experience with [technologies]. Availability: [full-time/part-time/contract].`,
+  };
+};
+
 export const suggestPromptImprovements = ai.defineFlow(
   {
     name: "suggestPromptImprovements",
     description:
       "Analyzes a user prompt for a hiring/candidate search and suggests ways to make it more structured and specific (role, location, working mode, experience, tools, techniques, skills, etc).",
     InputSchema: z.object({
-      userPrompt: z.string().describe("The user's initial prompt or requirement"),
+      userPrompt: z
+        .string()
+        .describe("The user's initial prompt or requirement"),
     }),
     OutputSchema: z.object({
-      suggestions: z.array(z.string()).describe("Suggestions to make the prompt more structured and specific"),
-      improvedPrompt: z.string().describe("A more structured and specific version of the user's prompt"),
+      suggestions: z
+        .array(z.string())
+        .describe(
+          "Suggestions to make the prompt more structured and specific"
+        ),
+      improvedPrompt: z
+        .string()
+        .describe(
+          "A more structured and specific version of the user's prompt"
+        ),
     }),
   },
   async ({ userPrompt }) => {
@@ -41,8 +72,8 @@ For any given user prompt, analyze it and suggest improvements by identifying mi
 - Any other relevant criteria
 
 Return:
-1. 4 Strong  suggestions for what to clarify or add .
-2. An improved, more structured version of the prompt that incorporates these suggestions (fill in with placeholders if info is missing).
+1. 4 Strong suggestions for what to clarify or add in bullet points.
+
 `;
 
     const prompt = `
@@ -53,19 +84,27 @@ Instructions:
 - List suggestions for making this prompt more structured and specific.
 - Then, rewrite the prompt in a more structured format, using placeholders (e.g., <role>, <location>, <skills>) for any missing details.
 - Output as JSON with two fields: "suggestions" (array of strings) and "improvedPrompt" (string).
+see if the user try any prompt, how and all it can be improve, that only we need to suggestion, make 4 buller points that have a heading and 10 words for each heading and that can be improve like this, or tell them to give more details.
 `;
 
-    const { output } = await ai.generate({
-      system,
-      prompt,
-      output: {
-        schema: z.object({
-          suggestions: z.array(z.string()),
-          improvedPrompt: z.string(),
-        }),
-      },
-    });
+    try {
+      const { output } = await ai.generate({
+        system,
+        prompt,
+        output: {
+          schema: z.object({
+            suggestions: z.array(z.string()),
+            improvedPrompt: z.string(),
+          }),
+        },
+      });
 
-    return output;
+      console.log("Gemini API response:", output);
+      return output;
+    } catch (error) {
+      console.error("Error calling Gemini API:", error);
+      // Fall back to mock function if Gemini API fails
+      return mockSuggestPromptImprovements({ userPrompt });
+    }
   }
 );
