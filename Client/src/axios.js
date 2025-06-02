@@ -82,26 +82,12 @@ api.interceptors.response.use(
     console.error("- URL:", originalRequest?.url);
     console.error("- Method:", originalRequest?.method);
     console.error("- Response data:", error.response?.data);
-    console.error("- Error message:", error.message);
-
-    if (error.response?.status === 401 && !originalRequest._retry) {
+    console.error("- Error message:", error.message);    if (error.response?.status === 401 && !originalRequest._retry) {
       originalRequest._retry = true;
-      try {
-        // Attempt to refresh token or re-authenticate.
-        // For simplicity, this example retries the original request.
-        // A real app might redirect to login or try a token refresh endpoint.
-        console.warn(
-          "Received 401, attempting to retry original request once."
-        );
-        // This is a basic retry, might need a proper token refresh logic here
-        // e.g. await refreshToken();
-        return api(originalRequest);
-      } catch (retryError) {
-        console.error("Retry after 401 failed:", retryError);
-        // If retry fails, redirect to login or show error
-        // window.location.href = "/"; // Or your login page
-        return Promise.reject(retryError);
-      }
+      console.warn("Received 401, user needs to re-authenticate");
+      // Instead of retrying, redirect to login
+      window.location.href = "/";
+      return Promise.reject(error);
     }
 
     return Promise.reject(error);

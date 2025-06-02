@@ -1,5 +1,5 @@
 import { createContext, useContext, useState, useEffect, useRef } from "react";
-import axiosInstance from "../axios";
+import { authService } from "../services/authService.js";
 
 const AuthContext = createContext();
 
@@ -37,7 +37,7 @@ const AuthProvider = ({ children }) => {
    * — Calls backend to see if there’s an active Google session.
    * — If yes, sets `user` to the returned profile object.
    * — If no, leaves `user` as null.
-   */ const checkAuthStatus = async () => {
+   */  const checkAuthStatus = async () => {
     if (authCheckInProgressRef.current) {
       console.log("Auth check already in progress, skipping duplicate call");
       return;
@@ -45,10 +45,9 @@ const AuthProvider = ({ children }) => {
 
     authCheckInProgressRef.current = true;
     try {
-      const resp = await axiosInstance.get("/auth/status");
-      // Expect response shape: { user: { id, name, email, avatarUrl } }
-      if (resp.data?.user) {
-        setUser(resp.data.user);
+      const response = await authService.checkAuthStatus();
+      if (response?.user) {
+        setUser(response.user);
       } else {
         setUser(null);
       }
@@ -76,26 +75,25 @@ const AuthProvider = ({ children }) => {
    * login()
    * — Simply redirect user to Google OAuth flow on the backend.
    * — In dev mode, does nothing (you’re already “logged in” as DEV_USER).
-   */ const login = () => {
+   */  const login = () => {
     if (DEV_BYPASS_AUTH) {
       // No-op in dev mode
       return;
     }
-    window.location.href = `${import.meta.env.VITE_API_URL}/auth/google`;
+    authService.redirectToGoogleAuth();
   };
 
   /**
    * logout()
    * — Calls backend to revoke the session, then clears local state.
    * — In dev mode, simply clears the dummy user.
-   */
-  const logout = async () => {
+   */  const logout = async () => {
     if (DEV_BYPASS_AUTH) {
       setUser(null);
       return;
     }
     try {
-      await axiosInstance.post("/auth/logout");
+      await authService.logout();
     } catch (err) {
       console.warn("Logout request failed:", err);
       // Even if the call fails, still clear client state

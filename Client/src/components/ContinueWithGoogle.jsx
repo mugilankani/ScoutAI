@@ -1,12 +1,12 @@
+import { useAuth } from "../context/AuthContext";
+
 export default function ContinueWithGoogle() {
-  const handleLogin = async () => {
-    window.location.href = `${import.meta.env.VITE_API_URL}/auth/google`;
-  };
+  const { login } = useAuth();
 
   return (
     <button
       className="group mb-3 flex focus:ring-offset-[#F5F5F5] items-center gap-3 rounded-full border border-gray-200 bg-white px-8 py-3 text-lg font-medium text-gray-700 transition-all duration-300 hover:cursor-pointer hover:shadow-md"
-      onClick={handleLogin}
+      onClick={login}
     >
       <svg
         className="h-6 w-6"
