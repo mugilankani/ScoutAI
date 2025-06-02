@@ -586,7 +586,7 @@ export const retrieveAndGenerateJsonAnswer = ai.defineTool(
       const docs = await ai.retrieve({
         retriever: jsonRetriever,
         query: retrievalQuery,
-        options: { limit: 1 },
+        options: { limit: 3 },
       });
 
       console.log("Retrieved docs count:", docs?.length || 0);
