@@ -4,12 +4,12 @@ import express from "express";
 import dotenv from "dotenv";
 import cors from "cors";
 import cookieParser from "cookie-parser";
-import { v4 as uuidv4 } from 'uuid'; // <<<< MAKE SURE THIS IS PRESENT AND USED
-import {  firestore } from "./config/firebaseAdmin.js"; // Corrected Firebase import
+import { v4 as uuidv4 } from "uuid";
+import { firestore } from "./config/firebaseAdmin.js";
+import { findCandidatesAndFetchProfiles } from "./controllers/hiringControllers.js";
 
-import {
-  findCandidatesAndFetchProfiles,
-} from "./controllers/hiringControllers.js";
+// Import routes
+import candidateRoutes from "./routes/candidateRoutes.js";
 import jsonRagRoutes from "./routes/jsonRag.js";
 import authRoutes from "./routes/authRoutes.js";
 import suggestionRoutes from "./routes/suggestionRoutes.js";
@@ -34,8 +34,8 @@ app.use(cookieParser());
 
 // Diagnostic middleware to log all requests
 app.use((req, res, next) => {
-  console.log(`SERVER LOG: ${req.method} ${req.url}`); // Added prefix for clarity
-  if (req.method === 'POST' && req.body) {
+  console.log(`SERVER LOG: ${req.method} ${req.url}`);
+  if (req.method === "POST" && req.body) {
     console.log(`SERVER LOG: Request Body:`, req.body);
   }
   next();
@@ -44,7 +44,11 @@ app.use((req, res, next) => {
 // --- Candidate Search Routes ---
 app.post("/api/candidates/search", async (req, res) => {
   console.log("SERVER LOG: /api/candidates/search POST endpoint hit");
-  const { recruiterQuery, filterPresent = false, userId: clientUserId } = req.body;
+  const {
+    recruiterQuery,
+    filterPresent = false,
+    userId: clientUserId,
+  } = req.body;
   const serverUserId = req.user?.uid;
 
   const effectiveUserId = serverUserId || clientUserId || "anonymous";
@@ -56,7 +60,9 @@ app.post("/api/candidates/search", async (req, res) => {
 
   const searchId = uuidv4(); // Using uuid for truly unique IDs
   const now = new Date().toISOString();
-  console.log(`SERVER LOG: Generated searchId: ${searchId} for query: "${recruiterQuery}"`);
+  console.log(
+    `SERVER LOG: Generated searchId: ${searchId} for query: "${recruiterQuery}"`
+  );
 
   try {
     const initialSearchData = {
@@ -71,7 +77,9 @@ app.post("/api/candidates/search", async (req, res) => {
       updatedAt: now,
     };
     await firestore.collection("searches").doc(searchId).set(initialSearchData);
-    console.log(`SERVER LOG: Stored initial search data for ${searchId} in Firestore.`);
+    console.log(
+      `SERVER LOG: Stored initial search data for ${searchId} in Firestore.`
+    );
 
     res.status(202).json({
       message: "Search initiated. Check status for results.",
@@ -82,9 +90,16 @@ app.post("/api/candidates/search", async (req, res) => {
     console.log(`SERVER LOG: Sent 202 response for searchId ${searchId}`);
 
     // --- Start the long-running task asynchronously ---
-    findCandidatesAndFetchProfiles(recruiterQuery, filterPresent, searchId, effectiveUserId)
+    findCandidatesAndFetchProfiles(
+      recruiterQuery,
+      filterPresent,
+      searchId,
+      effectiveUserId
+    )
       .then(async (finalData) => {
-        console.log(`SERVER LOG: Background search ${searchId} completed successfully.`);
+        console.log(
+          `SERVER LOG: Background search ${searchId} completed successfully.`
+        );
         await firestore.collection("searches").doc(searchId).update({
           status: "completed",
           progress: 100,
@@ -94,25 +109,40 @@ app.post("/api/candidates/search", async (req, res) => {
         });
       })
       .catch(async (error) => {
-        console.error(`SERVER LOG: Error in background search task ${searchId}:`, error.message);
-        await firestore.collection("searches").doc(searchId).update({
-          status: "failed",
-          progress: 0,
-          statusMessage: `Search failed: ${error.message || "An unknown error occurred."}`,
-          error: error.message || "An unknown error occurred during search.",
-          updatedAt: new Date().toISOString(),
-        });
+        console.error(
+          `SERVER LOG: Error in background search task ${searchId}:`,
+          error.message
+        );
+        await firestore
+          .collection("searches")
+          .doc(searchId)
+          .update({
+            status: "failed",
+            progress: 0,
+            statusMessage: `Search failed: ${
+              error.message || "An unknown error occurred."
+            }`,
+            error: error.message || "An unknown error occurred during search.",
+            updatedAt: new Date().toISOString(),
+          });
       });
   } catch (error) {
-    console.error("SERVER LOG: Error initiating search in POST /api/candidates/search:", error.message);
-    res.status(500).json({ error: "Failed to initiate search.", details: error.message });
+    console.error(
+      "SERVER LOG: Error initiating search in POST /api/candidates/search:",
+      error.message
+    );
+    res
+      .status(500)
+      .json({ error: "Failed to initiate search.", details: error.message });
   }
 });
 
 app.get("/api/candidates/search/status/:searchId", async (req, res) => {
   const { searchId } = req.params;
   // ... (rest of the status endpoint remains the same) ...
-  console.log(`SERVER LOG: /api/candidates/search/status/${searchId} GET endpoint hit`);
+  console.log(
+    `SERVER LOG: /api/candidates/search/status/${searchId} GET endpoint hit`
+  );
   if (!searchId) {
     return res.status(400).json({ error: "Search ID is required." });
   }
@@ -124,21 +154,31 @@ app.get("/api/candidates/search/status/:searchId", async (req, res) => {
       return res.status(404).json({ error: "Search not found." });
     }
     const searchData = searchDoc.data();
-    console.log(`SERVER LOG: Returning status for ${searchId}:`, searchData.status);
+    console.log(
+      `SERVER LOG: Returning status for ${searchId}:`,
+      searchData.status
+    );
     res.status(200).json(searchData);
   } catch (error) {
-    console.error(`SERVER LOG: Error fetching status for search ${searchId}:`, error.message);
-    res.status(500).json({ error: "Failed to fetch search status.", details: error.message });
+    console.error(
+      `SERVER LOG: Error fetching status for search ${searchId}:`,
+      error.message
+    );
+    res
+      .status(500)
+      .json({
+        error: "Failed to fetch search status.",
+        details: error.message,
+      });
   }
 });
 
-// Other Routes
+// Routes
+app.use("/api/candidates", candidateRoutes);
 app.use("/api/auth", authRoutes);
 app.use("/api/suggestions", suggestionRoutes);
-// REMOVE THIS DUPLICATE: app.post("/api/candidates/search", findCandidatesAndFetchProfiles);
 app.use("/api/rag", jsonRagRoutes);
 
-// ... (rest of your server.js: /test, /, /test-suggest, app.listen, unhandledRejection)
 // Test routes
 app.get("/api/test", (req, res) => {
   res.json({ message: "API is working!" });
@@ -173,7 +213,7 @@ app.listen(PORT, () => {
     `- Suggestions endpoint: http://localhost:${PORT}/api/suggestions/improve`
   );
   console.log(
-    `- Manual test endpoint: http://localhost:${PORT}/api/test-suggest`
+    `- Candidates search endpoint: http://localhost:${PORT}/api/candidates/search`
   );
 });
 

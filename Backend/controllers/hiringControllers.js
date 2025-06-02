@@ -5,7 +5,7 @@ import { fetchLinkedInProfiles } from "../service/linkedInScraper.js";
 import { agentParentFlow } from "../service/agentParent.js";
 import dotenv from "dotenv";
 // Fix the Firebase import - import the admin object directly
-import admin from "../firebase.js"; // Changed from firestore import
+import {firestore} from "../config/firebaseAdmin.js"; // Changed from firestore import
 
 dotenv.config();
 
@@ -13,22 +13,6 @@ const SERPAPI_KEY = process.env.SERPAPI_API_KEY;
 const GOOGLE_AI_KEY = process.env.GOOGLE_API_KEY;
 const APIFY_TOKEN = process.env.APIFY_API_TOKEN;
 
-// Create a firestore variable or provide a mock for development
-let firestore;
-try {
-  firestore = admin.firestore();
-  console.log("Firestore initialized successfully");
-} catch (error) {
-  console.warn("Firestore not initialized:", error.message);
-  // Mock firestore for development/testing
-  firestore = {
-    collection: () => ({
-      doc: () => ({
-        update: async () => console.log("Mock firestore update called"),
-      }),
-    }),
-  };
-}
 
 // Helper to update progress in Firestore
 const updateSearchProgress = async (
@@ -295,6 +279,118 @@ export const handleCandidatesSearch = async (req, res) => {
     res.status(500).json({
       error: "Failed to process search request",
       details: error.message,
+    });
+  }
+};
+
+// Add new function to get search history for a user
+export const getUserSearchHistory = async (req, res) => {
+  try {
+    const { userId } = req.params;
+    
+    if (!userId) {
+      return res.status(400).json({ error: "User ID is required" });
+    }
+
+    console.log(`Fetching search history for user: ${userId}`);
+    
+    // Debug: Log common patterns used for userId to help identify issues
+    if (userId.includes('@')) {
+      console.log(`Note: userId appears to be an email address: ${userId}`);
+    } else if (userId.length > 20) {
+      console.log(`Note: userId appears to be a long token/hash: ${userId}`);
+    }
+    
+    try {
+      // Modified query to avoid using composite index
+      // First, get all documents with matching userId
+      const searchesSnapshot = await firestore
+        .collection("searches")
+        .where("userId", "==", userId)
+        .get();
+      
+      if (searchesSnapshot.empty) {
+        console.log(`No search history found for user: ${userId}`);
+        return res.status(200).json([]);
+      }
+      
+      const searches = [];
+      searchesSnapshot.forEach((doc) => {
+        searches.push(doc.data());
+      });
+      
+      // Sort in memory instead of in the query
+      const sortedSearches = searches.sort((a, b) => {
+        // Ensure we have dates to compare
+        const dateA = a.createdAt ? new Date(a.createdAt) : new Date(0);
+        const dateB = b.createdAt ? new Date(b.createdAt) : new Date(0);
+        // Sort descending (newest first)
+        return dateB - dateA;
+      });
+      
+      // Limit to 50 results after sorting
+      const limitedResults = sortedSearches.slice(0, 50);
+      
+      console.log(`Found ${searches.length} search records for user: ${userId}`);
+      res.status(200).json(limitedResults);
+    } catch (dbError) {
+      console.error("Firestore query error:", dbError);
+      
+      // Display a user-friendly message with a link to create the index
+      if (dbError.code === 'failed-precondition' && dbError.message.includes('index')) {
+        const indexUrl = dbError.details.match(/https:\/\/console\.firebase\.google\.com[^"]+/);
+        console.error("MISSING INDEX ERROR: You need to create a composite index");
+        console.error(`Index creation URL: ${indexUrl ? indexUrl[0] : "Not found in error"}`);
+        
+        // For now, modify the approach to not require the index
+        // Try a simplified query without sorting
+        try {
+          console.log("Attempting simplified query without compound index...");
+          const simpleSnapshot = await firestore
+            .collection("searches")
+            .where("userId", "==", userId)
+            .get();
+          
+          if (simpleSnapshot.empty) {
+            console.log(`No search history found for user: ${userId} (simplified query)`);
+            return res.status(200).json([]);
+          }
+          
+          const searches = [];
+          simpleSnapshot.forEach((doc) => {
+            searches.push(doc.data());
+          });
+          
+          // Sort in memory
+          const sortedSearches = searches.sort((a, b) => {
+            const dateA = a.createdAt ? new Date(a.createdAt) : new Date(0);
+            const dateB = b.createdAt ? new Date(b.createdAt) : new Date(0);
+            return dateB - dateA;
+          });
+          
+          // Limit to 50 results
+          const limitedResults = sortedSearches.slice(0, 50);
+          
+          console.log(`Found ${searches.length} search records for user: ${userId} (simplified query)`);
+          return res.status(200).json(limitedResults);
+        } catch (fallbackError) {
+          console.error("Fallback query also failed:", fallbackError);
+          return res.status(500).json({
+            error: "Database query configuration issue",
+            details: "Administrator needs to create required database indexes",
+            indexUrl: indexUrl ? indexUrl[0] : null
+          });
+        }
+      }
+      
+      // Handle other database errors
+      throw dbError;
+    }
+  } catch (error) {
+    console.error("Error retrieving search history:", error);
+    res.status(500).json({
+      error: "Failed to retrieve search history",
+      details: error.message
     });
   }
 };

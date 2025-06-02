@@ -1,0 +1,101 @@
+{
+  "search_metadata": {
+    "id": "683d26f955ba65fac43d6141",
+    "status": "Success",
+    "json_endpoint": "https://serpapi.com/searches/138293f1ed6eb44e/683d26f955ba65fac43d6141.json",
+    "created_at": "2025-06-02 04:22:17 UTC",
+    "processed_at": "2025-06-02 04:22:17 UTC",
+    "google_light_url": "https://www.google.com/search?q=site%3Alinkedin.com%2Fin+full+stack+developer+React+Node.js+freelance&oq=site%3Alinkedin.com%2Fin+full+stack+developer+React+Node.js+freelance&uule=w+CAIQICINVW5pdGVkIFN0YXRlcw&hl=en&sourceid=chrome&ie=UTF-8&gbv=1",
+    "raw_html_file": "https://serpapi.com/searches/138293f1ed6eb44e/683d26f955ba65fac43d6141.html",
+    "total_time_taken": 1.52
+  },
+  "search_parameters": {
+    "engine": "google_light",
+    "q": "site:linkedin.com/in full stack developer React Node.js freelance",
+    "location_requested": "United States",
+    "location_used": "United States",
+    "google_domain": "google.com",
+    "hl": "en",
+    "device": "desktop"
+  },
+  "search_information": {
+    "query_displayed": "site:linkedin.com/in full stack developer React Node.js freelance",
+    "organic_results_state": "Results for exact spelling"
+  },
+  "organic_results": [
+    {
+      "position": 1,
+      "title": "Malik Benabid - Freelance Full-stack Developer (React.js ... - LinkedIn",
+      "link": "https://www.linkedin.com/in/freelance-react-web-developer",
+      "displayed_link": "www.linkedin.com › freelance-react-web-developer",
+      "snippet": "I build functional web apps and SaaS tools with clean code and seamless payments. What I Work With : Frontend: React, Next.js, Tailwind CSS Backend: Node.js, ..."
+    },
+    {
+      "position": 2,
+      "title": "Denis Kibichiy - Full-stack JavaScript Developer - Freelance | LinkedIn",
+      "link": "https://ke.linkedin.com/in/denis-kibichiy-3812b6176",
+      "displayed_link": "ke.linkedin.com › ...",
+      "snippet": "Fullstack development with practical hands on projects. The topics covered include HTML, CSS, JavaScript, API, React, Node and DevOps. Mount Kenya University - ..."
+    },
+    {
+      "position": 3,
+      "title": "Rebekah LeBlanc - Full Stack Web Developer - Freelance - LinkedIn",
+      "link": "https://ca.linkedin.com/in/rebekahleblanc",
+      "displayed_link": "ca.linkedin.com › rebekahleblanc",
+      "snippet": "I lead lectures on JavaScript, React, and Node.js, identify and solve problem areas in students' code, and collaborate with my fellow instructors to plan ..."
+    },
+    {
+      "position": 4,
+      "title": "Garik Melkonyan - Javascript Developer - Freelance | LinkedIn",
+      "link": "https://am.linkedin.com/in/garik-melkonyan-full-stack-engineer",
+      "displayed_link": "am.linkedin.com › garik-melkonyan-full-stack-engineer",
+      "snippet": "Full-Stack web developer with 4 years of hands-on experience in JavaScript | React.js | Redux Toolkit | Node.js | Express.js | TypeScript | MongoDB |"
+    },
+    {
+      "position": 5,
+      "title": "Thomas Ryan - Full Stack Developer - Freelance - LinkedIn",
+      "link": "https://www.linkedin.com/in/the-thom-ryan",
+      "displayed_link": "www.linkedin.com › the-thom-ryan",
+      "snippet": "I am excited to continue to develop my full-stack skills by working with JavaScript, CSS, React, Node, Express, PostgreSQL, and Knex. I am especially excited ..."
+    },
+    {
+      "position": 6,
+      "title": "Maaz khan - Freelance Full-Stack Developer | React.js & Node.js ...",
+      "link": "https://pk.linkedin.com/in/maaz-khan-3bb05722a",
+      "displayed_link": "pk.linkedin.com › ...",
+      "snippet": "I am a freelance full-stack developer specializing in JavaScript, React.js, Node.js, and the MERN stack (MongoDB, Express.js, React.js, Node.js)."
+    },
+    {
+      "position": 7,
+      "title": "Bryan Ebert - Full Stack Developer - Freelance | LinkedIn",
+      "link": "https://www.linkedin.com/in/bryan-ebert-37458356",
+      "displayed_link": "www.linkedin.com › bryan-ebert-37458356",
+      "snippet": "Seeking any JavaScript, React, or MERN stack developer opportunities. I am a recent graduate with a MERN stack developer certification from Kingsland ..."
+    },
+    {
+      "position": 8,
+      "title": "Maxime FERRET - Freelance Fullstack developer - React.js / Node.js",
+      "link": "https://fr.linkedin.com/in/maxime-ferret/en",
+      "displayed_link": "fr.linkedin.com › maxime-ferret",
+      "snippet": "I build your web app from A to Z React / Node developer · Freelance software developer focused on web technologies & programming since 2018 I help ..."
+    },
+    {
+      "position": 9,
+      "title": "Luke Connors - Full Stack Developer - Freelance | LinkedIn",
+      "link": "https://www.linkedin.com/in/luke-connors-981373b1",
+      "displayed_link": "www.linkedin.com › ...",
+      "snippet": "Full Stack Web Developer with experience using languages, technologies, and frameworks such as: JavaScript, React.js, Redux, Node.js, Express, Sequelize ..."
+    },
+    {
+      "position": 10,
+      "title": "Julian luna - Freelance Full-Stack Developer | React, Node.js, Next ...",
+      "link": "https://co.linkedin.com/in/julian-luna-dev",
+      "displayed_link": "co.linkedin.com › julian-luna-dev",
+      "snippet": "Senior Full-Stack Engineer | Building High-Performance Products with React, Node, Django | Proven Track Record in SaaS, Fintech & E-commerce | 7+ Years ..."
+    }
+  ],
+  "serpapi_pagination": {
+    "current": 1,
+    "next": "https://serpapi.com/search.json?device=desktop&engine=google_light&google_domain=google.com&hl=en&location=United+States&q=site%3Alinkedin.com%2Fin+full+stack+developer+React+Node.js+freelance&start=10"
+  }
+}
