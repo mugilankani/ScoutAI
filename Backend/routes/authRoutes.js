@@ -74,7 +74,7 @@ router.get("/google/callback", async (req, res) => {
       httpOnly: true,
       secure: true, // Always true for HTTPS production
       sameSite: "none", // Required for cross-origin cookies
-      domain: process.env.COOKIE_DOMAIN, // Cookie domain from environment
+      domain: process.env.COOKIE_DOMAIN,
       maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
     });
     res.redirect(`${process.env.CLIENT_URL}/search`);
@@ -105,6 +105,8 @@ router.get("/status", async (req, res) => {
     if (!userDoc.exists) {
       res.clearCookie("authToken", {
         domain: process.env.COOKIE_DOMAIN,
+        secure: true,
+        sameSite: "none",
       });
       return res.json({ user: null });
     }
@@ -115,6 +117,8 @@ router.get("/status", async (req, res) => {
     console.error("Error checking auth status:", error);
     res.clearCookie("authToken", {
       domain: process.env.COOKIE_DOMAIN,
+      secure: true,
+      sameSite: "none",
     });
     return res.json({ user: null });
   }
@@ -124,6 +128,8 @@ router.get("/status", async (req, res) => {
 router.post("/logout", (req, res) => {
   res.clearCookie("authToken", {
     domain: process.env.COOKIE_DOMAIN,
+    secure: true,
+    sameSite: "none",
   });
   res.json({ message: "Logged out successfully" });
 });
