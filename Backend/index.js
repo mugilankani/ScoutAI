@@ -6,13 +6,18 @@ import cors from "cors";
 import cookieParser from "cookie-parser";
 import { v4 as uuidv4 } from "uuid";
 import path from "path";
-import { fileURLToPath } from 'url';
+import { fileURLToPath } from "url";
 import { firestore } from "./config/firebaseAdmin.js";
 import { findCandidatesAndFetchProfiles } from "./controllers/hiringControllers.js";
 
 // Get the directory name for ES modules
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
+
+// Debug: Log the paths being used
+console.log("Backend directory:", __dirname);
+console.log("Static files path:", path.join(__dirname, "dist"));
+console.log("Index.html path:", path.join(__dirname, "dist", "index.html"));
 
 // Import routes
 import candidateRoutes from "./routes/candidateRoutes.js";
@@ -29,7 +34,10 @@ const PORT = process.env.PORT || 3000;
 // Middleware
 app.use(
   cors({
-    origin: ["https://scoutai-v1.onrender.com", process.env.CLIENT_URL || "http://localhost:5173"],
+    origin: [
+      "https://scoutai-v1.onrender.com",
+      process.env.CLIENT_URL || "http://localhost:5173",
+    ],
     credentials: true,
     optionsSuccessStatus: 200,
   })
@@ -39,7 +47,7 @@ app.use(express.json());
 app.use(cookieParser());
 
 // Serve static files from the backend's dist folder
-app.use(express.static(path.join(__dirname, 'dist')));
+app.use(express.static(path.join(__dirname, "dist")));
 
 // Diagnostic middleware to log all requests
 app.use((req, res, next) => {
@@ -173,12 +181,10 @@ app.get("/api/candidates/search/status/:searchId", async (req, res) => {
       `SERVER LOG: Error fetching status for search ${searchId}:`,
       error.message
     );
-    res
-      .status(500)
-      .json({
-        error: "Failed to fetch search status.",
-        details: error.message,
-      });
+    res.status(500).json({
+      error: "Failed to fetch search status.",
+      details: error.message,
+    });
   }
 });
 
@@ -210,8 +216,15 @@ app.post("/api/test-suggest", async (req, res) => {
 });
 
 // Catch-all handler: send back React's index.html file for non-API routes
-app.get('*', (req, res) => {
-  res.sendFile(path.join(__dirname, 'dist', 'index.html'));
+app.get("*", (req, res) => {
+  const indexPath = path.join(__dirname, "dist", "index.html");
+  console.log(`Serving index.html from: ${indexPath}`);
+  res.sendFile(indexPath, (err) => {
+    if (err) {
+      console.error("Error serving index.html:", err);
+      res.status(500).send("Error loading the application");
+    }
+  });
 });
 
 // Start the server
