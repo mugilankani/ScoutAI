@@ -69,15 +69,14 @@ router.get("/google/callback", async (req, res) => {
       process.env.JWT_SECRET || "your-secret-key",
       { expiresIn: "7d" }
     );
-
     // Set HTTP-only cookie
     res.cookie("authToken", accessToken, {
       httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      sameSite: "lax",
+      secure: true, // Always true for HTTPS production
+      sameSite: "none", // Required for cross-origin cookies
+      domain: process.env.COOKIE_DOMAIN, // Cookie domain from environment
       maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
     });
-
     res.redirect(`${process.env.CLIENT_URL}/search`);
   } catch (error) {
     console.error("Error during authentication:", error);
@@ -103,9 +102,10 @@ router.get("/status", async (req, res) => {
     // Get user from Firestore
     const userRef = firestore.collection("users").doc(decoded.userId);
     const userDoc = await userRef.get();
-
     if (!userDoc.exists) {
-      res.clearCookie("authToken");
+      res.clearCookie("authToken", {
+        domain: process.env.COOKIE_DOMAIN,
+      });
       return res.json({ user: null });
     }
 
@@ -113,14 +113,18 @@ router.get("/status", async (req, res) => {
     return res.json({ user });
   } catch (error) {
     console.error("Error checking auth status:", error);
-    res.clearCookie("authToken");
+    res.clearCookie("authToken", {
+      domain: process.env.COOKIE_DOMAIN,
+    });
     return res.json({ user: null });
   }
 });
 
 // POST /auth/logout - Logout user
 router.post("/logout", (req, res) => {
-  res.clearCookie("authToken");
+  res.clearCookie("authToken", {
+    domain: process.env.COOKIE_DOMAIN,
+  });
   res.json({ message: "Logged out successfully" });
 });
 
