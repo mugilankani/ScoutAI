@@ -30,7 +30,10 @@ export default function TalentRow({ talent }) {
   const title =
     typeof talent.currentRole?.title === "object"
       ? JSON.stringify(talent.currentRole?.title)
-      : talent.currentRole?.title || talent.personalInfo?.headline || talent.title || "";
+      : talent.currentRole?.title ||
+        talent.personalInfo?.headline ||
+        talent.title ||
+        "";
 
   // Extract location safely
   const location =
@@ -41,28 +44,28 @@ export default function TalentRow({ talent }) {
       : "";
 
   // Extract experience safely
-  const experience =
-    talent.currentRole?.durationInMonths
-      ? `${Math.floor(talent.currentRole.durationInMonths / 12)} years`
-      : typeof talent.experience === "string"
-      ? talent.experience
-      : "";
+  const experience = talent.currentRole?.durationInMonths
+    ? `${Math.floor(talent.currentRole.durationInMonths / 12)} years`
+    : typeof talent.experience === "string"
+    ? talent.experience
+    : "";
 
   // Extract skills - handle different formats and ensure they're strings
   const skills = Array.isArray(talent.skills)
-    ? talent.skills
-        .slice(0, 5)
-        .map((skill) => {
-          if (typeof skill === "object") return skill.name || JSON.stringify(skill);
-          return String(skill);
-        })
+    ? talent.skills.slice(0, 5).map((skill) => {
+        if (typeof skill === "object")
+          return skill.name || JSON.stringify(skill);
+        return String(skill);
+      })
     : [];
 
   // Extract avatar/profile picture safely
   const avatar =
     talent.socialInfo?.profilePicture?.url ||
     (typeof talent.avatar === "string" ? talent.avatar : "") ||
-    `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&background=6366f1&color=fff`;
+    `https://ui-avatars.com/api/?name=${encodeURIComponent(
+      name
+    )}&background=6366f1&color=fff`;
 
   // Extract summary safely
   const summary =
@@ -84,10 +87,9 @@ export default function TalentRow({ talent }) {
   const github = typeof talent.github === "string" ? talent.github : "";
 
   // Extract match score safely
-  const matchScore =
-    talent.scoring?.score
-      ? Math.round(talent.scoring.score * 10)
-      : talent.matchScore || 0;
+  const matchScore = talent.scoring?.score
+    ? Math.round(talent.scoring.score * 10)
+    : talent.matchScore || 0;
 
   // Create a unique ID for navigation
   const id =
@@ -185,9 +187,7 @@ export default function TalentRow({ talent }) {
               {github && (
                 <a
                   href={
-                    github.startsWith("http")
-                      ? github
-                      : `https://${github}`
+                    github.startsWith("http") ? github : `https://${github}`
                   }
                   target="_blank"
                   rel="noopener noreferrer"

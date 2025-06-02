@@ -1,0 +1,23 @@
+{
+  "name": "scoutai",
+  "version": "1.0.0",
+  "description": "AI-driven talent scout",
+  "main": "index.js",
+  "scripts": {
+    "start": "cd Backend && node index.js",
+    "dev:backend": "cd Backend && nodemon index.js",
+    "dev:frontend": "cd Client && npm run dev",
+    "dev": "concurrently \"npm run dev:backend\" \"npm run dev:frontend\""
+  },
+  "keywords": [
+    "ai",
+    "talent",
+    "recruitment"
+  ],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "concurrently": "^8.2.2",
+    "nodemon": "^3.0.1"
+  }
+}

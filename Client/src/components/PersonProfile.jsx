@@ -6,7 +6,7 @@ const PersonProfile = () => {
   const { personId } = useParams();
   const navigate = useNavigate();
   const routerLocation = useLocation(); // Renamed from 'location' to 'routerLocation'
-  
+
   // Get talent directly from state if available (passed from TalentRow)
   const [person, setPerson] = useState(routerLocation.state?.talent || null);
   const [isLoading, setIsLoading] = useState(!routerLocation.state?.talent);
@@ -17,7 +17,7 @@ const PersonProfile = () => {
       setIsLoading(false);
       return;
     }
-    
+
     // Otherwise fetch the profile data
     const fetchPersonProfile = async () => {
       setIsLoading(true);
@@ -111,114 +111,154 @@ const PersonProfile = () => {
   // Extract all the fields with fallbacks
   const getName = () => {
     if (person.personalInfo?.fullName) return person.personalInfo.fullName;
-    
+
     if (person.personalInfo?.firstName && person.personalInfo?.lastName) {
       return `${person.personalInfo.firstName} ${person.personalInfo.lastName}`;
     }
-    
-    if (typeof person.name === 'string') return person.name;
-    
-    if (typeof person.name === 'object') {
+
+    if (typeof person.name === "string") return person.name;
+
+    if (typeof person.name === "object") {
       return JSON.stringify(person.name);
     }
-    
+
     return "Unknown";
   };
-  
+
   const name = getName();
-  
+
   // Extract job title
-  const title = typeof person.currentRole?.title === 'string' ? 
-                person.currentRole.title : 
-                (typeof person.personalInfo?.headline === 'string' ? 
-                 person.personalInfo.headline : 
-                 (typeof person.title === 'string' ? person.title : ""));
-  
+  const title =
+    typeof person.currentRole?.title === "string"
+      ? person.currentRole.title
+      : typeof person.personalInfo?.headline === "string"
+      ? person.personalInfo.headline
+      : typeof person.title === "string"
+      ? person.title
+      : "";
+
   // Extract location
-  const locationStr = person.location?.city && person.location?.country ? 
-                  `${person.location.city}, ${person.location.country}` : 
-                  (typeof person.location === 'string' ? person.location : "");
-  
+  const locationStr =
+    person.location?.city && person.location?.country
+      ? `${person.location.city}, ${person.location.country}`
+      : typeof person.location === "string"
+      ? person.location
+      : "";
+
   // Extract experience
-  const experience = person.currentRole?.durationInMonths ? 
-                    `${Math.floor(person.currentRole.durationInMonths / 12)} years` : 
-                    (typeof person.experience === 'string' ? person.experience : "");
-  
+  const experience = person.currentRole?.durationInMonths
+    ? `${Math.floor(person.currentRole.durationInMonths / 12)} years`
+    : typeof person.experience === "string"
+    ? person.experience
+    : "";
+
   // Process skills
-  const skills = Array.isArray(person.skills) ? 
-                person.skills.map(skill => {
-                  if (typeof skill === 'object') {
-                    return {
-                      name: skill.name || "",
-                      endorsementCount: skill.endorsementCount || 0
-                    };
-                  }
-                  return { name: String(skill), endorsementCount: 0 };
-                }).sort((a, b) => b.endorsementCount - a.endorsementCount) : // Sort by endorsement count
-                [];
-  
+  const skills = Array.isArray(person.skills)
+    ? person.skills
+        .map((skill) => {
+          if (typeof skill === "object") {
+            return {
+              name: skill.name || "",
+              endorsementCount: skill.endorsementCount || 0,
+            };
+          }
+          return { name: String(skill), endorsementCount: 0 };
+        })
+        .sort((a, b) => b.endorsementCount - a.endorsementCount) // Sort by endorsement count
+    : [];
+
   // Extract avatar/profile picture
-  const avatar = person.socialInfo?.profilePicture?.large || 
-                person.socialInfo?.profilePicture?.medium || 
-                person.socialInfo?.profilePicture?.url ||
-                person.avatar || 
-                `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&background=6366f1&color=fff&size=200`;
-  
+  const avatar =
+    person.socialInfo?.profilePicture?.large ||
+    person.socialInfo?.profilePicture?.medium ||
+    person.socialInfo?.profilePicture?.url ||
+    person.avatar ||
+    `https://ui-avatars.com/api/?name=${encodeURIComponent(
+      name
+    )}&background=6366f1&color=fff&size=200`;
+
   // Extract summary/about
-  const summary = typeof person.personalInfo?.about === 'string' ? 
-                 person.personalInfo.about : 
-                 (typeof person.summary === 'string' ? person.summary : "");
-  
+  const summary =
+    typeof person.personalInfo?.about === "string"
+      ? person.personalInfo.about
+      : typeof person.summary === "string"
+      ? person.summary
+      : "";
+
   // Extract social links
-  const linkedin = typeof person.socialInfo?.linkedinUrl === 'string' ? 
-                  person.socialInfo.linkedinUrl : 
-                  (typeof person.linkedin === 'string' ? person.linkedin : "");
-  
-  const github = typeof person.github === 'string' ? person.github : "";
-  
-  const website = typeof person.contactInfo?.website === 'string' ? 
-                 person.contactInfo.website : 
-                 (typeof person.portfolio === 'string' ? person.portfolio : "");
-  
+  const linkedin =
+    typeof person.socialInfo?.linkedinUrl === "string"
+      ? person.socialInfo.linkedinUrl
+      : typeof person.linkedin === "string"
+      ? person.linkedin
+      : "";
+
+  const github = typeof person.github === "string" ? person.github : "";
+
+  const website =
+    typeof person.contactInfo?.website === "string"
+      ? person.contactInfo.website
+      : typeof person.portfolio === "string"
+      ? person.portfolio
+      : "";
+
   // Extract connections/followers
   const connections = person.socialInfo?.connectionsCount || 0;
   const followers = person.socialInfo?.followersCount || 0;
-  
+
   // Extract match score
-  const matchScore = person.scoring?.score ? 
-                    Math.round(person.scoring.score * 10) : 
-                    person.matchScore || 0;
-  
+  const matchScore = person.scoring?.score
+    ? Math.round(person.scoring.score * 10)
+    : person.matchScore || 0;
+
   // Extract languages
-  const languages = Array.isArray(person.languages) ? 
-                  person.languages.map(lang => typeof lang === 'object' ? lang.name : lang) : 
-                  [];
-  
+  const languages = Array.isArray(person.languages)
+    ? person.languages.map((lang) =>
+        typeof lang === "object" ? lang.name : lang
+      )
+    : [];
+
   // Format experiences
   const experienceDetails = [];
   if (Array.isArray(person.experiences)) {
-    person.experiences.forEach(exp => {
-      const company = typeof exp.companyName === 'string' ? exp.companyName : 
-                    (typeof exp.company?.name === 'string' ? exp.company.name : 
-                     (typeof exp.company === 'string' ? exp.company : 
-                      (typeof exp.company === 'object' ? JSON.stringify(exp.company) : "")));
-                      
-      const position = typeof exp.title === 'string' ? exp.title : "";
-      
-      const startYear = exp.startDate && typeof exp.startDate === 'string' ? exp.startDate.substring(0, 4) : "";
-      const endYear = exp.endDate === "Present" ? "Present" : 
-                    (exp.endDate && typeof exp.endDate === 'string' ? exp.endDate.substring(0, 4) : "");
-      const duration = `${startYear}${startYear && endYear ? " - " : ""}${endYear}`;
-      
-      const description = typeof exp.description === 'string' ? exp.description : "";
-      
+    person.experiences.forEach((exp) => {
+      const company =
+        typeof exp.companyName === "string"
+          ? exp.companyName
+          : typeof exp.company?.name === "string"
+          ? exp.company.name
+          : typeof exp.company === "string"
+          ? exp.company
+          : typeof exp.company === "object"
+          ? JSON.stringify(exp.company)
+          : "";
+
+      const position = typeof exp.title === "string" ? exp.title : "";
+
+      const startYear =
+        exp.startDate && typeof exp.startDate === "string"
+          ? exp.startDate.substring(0, 4)
+          : "";
+      const endYear =
+        exp.endDate === "Present"
+          ? "Present"
+          : exp.endDate && typeof exp.endDate === "string"
+          ? exp.endDate.substring(0, 4)
+          : "";
+      const duration = `${startYear}${
+        startYear && endYear ? " - " : ""
+      }${endYear}`;
+
+      const description =
+        typeof exp.description === "string" ? exp.description : "";
+
       experienceDetails.push({
         company,
         position,
         duration,
         description,
         startDate: exp.startDate,
-        endDate: exp.endDate
+        endDate: exp.endDate,
       });
     });
     // Sort experiences by start date (newest first)
@@ -230,69 +270,97 @@ const PersonProfile = () => {
   } else if (Array.isArray(person.experience_details)) {
     experienceDetails.push(...person.experience_details);
   }
-  
+
   // Format education
   const educationDetails = [];
   if (Array.isArray(person.education)) {
-    person.education.forEach(edu => {
-      const institution = typeof edu.schoolName === 'string' ? edu.schoolName : 
-                       (typeof edu.institution === 'string' ? edu.institution : "");
-                       
-      const degree = typeof edu.degreeName === 'string' ? edu.degreeName : 
-                   (typeof edu.degree === 'string' ? edu.degree : 
-                    (typeof edu.fieldOfStudy === 'string' ? edu.fieldOfStudy : ""));
-                    
-      const startYear = edu.startDate && typeof edu.startDate === 'string' ? edu.startDate.substring(0, 4) : "";
-      const endYear = edu.endDate && typeof edu.endDate === 'string' ? edu.endDate.substring(0, 4) : "";
-      const year = startYear || endYear ? `${startYear || ""}${startYear && endYear ? " - " : ""}${endYear || ""}` : 
-                 (typeof edu.dateRange === 'string' ? edu.dateRange : 
-                  (typeof edu.year === 'string' ? edu.year : ""));
-                 
+    person.education.forEach((edu) => {
+      const institution =
+        typeof edu.schoolName === "string"
+          ? edu.schoolName
+          : typeof edu.institution === "string"
+          ? edu.institution
+          : "";
+
+      const degree =
+        typeof edu.degreeName === "string"
+          ? edu.degreeName
+          : typeof edu.degree === "string"
+          ? edu.degree
+          : typeof edu.fieldOfStudy === "string"
+          ? edu.fieldOfStudy
+          : "";
+
+      const startYear =
+        edu.startDate && typeof edu.startDate === "string"
+          ? edu.startDate.substring(0, 4)
+          : "";
+      const endYear =
+        edu.endDate && typeof edu.endDate === "string"
+          ? edu.endDate.substring(0, 4)
+          : "";
+      const year =
+        startYear || endYear
+          ? `${startYear || ""}${startYear && endYear ? " - " : ""}${
+              endYear || ""
+            }`
+          : typeof edu.dateRange === "string"
+          ? edu.dateRange
+          : typeof edu.year === "string"
+          ? edu.year
+          : "";
+
       educationDetails.push({
         institution,
         degree,
-        year
+        year,
       });
     });
   } else if (Array.isArray(person.education_details)) {
     educationDetails.push(...person.education_details);
   }
-  
+
   // Extract certifications
-  const certifications = Array.isArray(person.certifications) ? 
-                       person.certifications.map(cert => ({
-                         name: cert.name || "",
-                         authority: cert.authority || "",
-                         date: cert.date || cert.startDate || ""
-                       })) : [];
-  
+  const certifications = Array.isArray(person.certifications)
+    ? person.certifications.map((cert) => ({
+        name: cert.name || "",
+        authority: cert.authority || "",
+        date: cert.date || cert.startDate || "",
+      }))
+    : [];
+
   // Extract key sections we want to highlight
   const extractPrescreening = () => {
     // Handle case where prescreening is in standard format
     if (Array.isArray(person.prescreening?.questions)) {
-      return person.prescreening.questions.map((q, i) => {
-        // If q is already an object with question/answer properties
-        if (typeof q === 'object' && q !== null && q.question) {
-          return q;
-        }
-        // If q is a string, create a question object with empty answer
-        if (typeof q === 'string') {
-          return {
-            question: q,
-            answer: "" // No answer in the raw data format
-          };
-        }
-        return null;
-      }).filter(q => q !== null);
+      return person.prescreening.questions
+        .map((q, i) => {
+          // If q is already an object with question/answer properties
+          if (typeof q === "object" && q !== null && q.question) {
+            return q;
+          }
+          // If q is a string, create a question object with empty answer
+          if (typeof q === "string") {
+            return {
+              question: q,
+              answer: "", // No answer in the raw data format
+            };
+          }
+          return null;
+        })
+        .filter((q) => q !== null);
     }
     return [];
   };
-  
+
   const prescreening = extractPrescreening();
   const outreachMessage = person.outreach?.message || "";
   const scoringDetails = person.scoring?.WhySuits || "";
-  const backgroundCheck = person.backgroundChecks?.summary || 
-                        (person.backgroundChecks?.flagged?.length > 0 ? "Issues found" : "No issues found");
+  const backgroundCheck =
+    person.backgroundChecks?.summary ||
+    (person.backgroundChecks?.flagged?.length > 0
+      ? "Issues found"
+      : "No issues found");
   const backgroundFlags = person.backgroundChecks?.flagged || [];
 
   return (
@@ -334,29 +402,36 @@ const PersonProfile = () => {
                 <div className="flex justify-between items-start">
                   <div>
                     <h1 className="text-3xl font-bold mb-2">{name}</h1>
-                    {title && <p className="text-xl opacity-90 mb-2">{title}</p>}
-                    
+                    {title && (
+                      <p className="text-xl opacity-90 mb-2">{title}</p>
+                    )}
+
                     {(locationStr || experience) && (
                       <p className="opacity-75 mb-2">
-                        {locationStr}{locationStr && experience && " • "}{experience}
+                        {locationStr}
+                        {locationStr && experience && " • "}
+                        {experience}
                       </p>
                     )}
-                    
+
                     {(connections > 0 || followers > 0) && (
                       <p className="text-sm opacity-75">
                         {connections > 0 && `${connections} connections`}
-                        {connections > 0 && followers > 0 && ' • '}
+                        {connections > 0 && followers > 0 && " • "}
                         {followers > 0 && `${followers} followers`}
                       </p>
                     )}
                   </div>
-                  
+
                   {languages.length > 0 && (
                     <div className="text-right">
                       <p className="text-sm font-medium mb-1">Languages</p>
                       <div className="flex gap-1">
                         {languages.map((lang, i) => (
-                          <span key={i} className="bg-white/20 backdrop-blur-sm px-2 py-0.5 rounded text-xs">
+                          <span
+                            key={i}
+                            className="bg-white/20 backdrop-blur-sm px-2 py-0.5 rounded text-xs"
+                          >
                             {lang}
                           </span>
                         ))}
@@ -364,7 +439,7 @@ const PersonProfile = () => {
                     </div>
                   )}
                 </div>
-                
+
                 {matchScore > 0 && (
                   <div className="flex items-center gap-2 mt-3">
                     <span className="bg-white/20 backdrop-blur-sm px-3 py-1 rounded-full text-sm font-medium">
@@ -392,8 +467,17 @@ const PersonProfile = () => {
                 {scoringDetails && (
                   <div className="bg-green-50 p-3 rounded-lg border border-green-100">
                     <h3 className="font-medium text-green-800 mb-1 flex gap-2 items-center">
-                      <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                        <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        className="h-5 w-5"
+                        viewBox="0 0 20 20"
+                        fill="currentColor"
+                      >
+                        <path
+                          fillRule="evenodd"
+                          d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+                          clipRule="evenodd"
+                        />
                       </svg>
                       Match Analysis
                     </h3>
@@ -403,15 +487,26 @@ const PersonProfile = () => {
                 {backgroundCheck && backgroundCheck !== "No issues found" && (
                   <div className="bg-red-50 p-3 rounded-lg border border-red-100">
                     <h3 className="font-medium text-red-800 mb-1 flex gap-2 items-center">
-                      <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                        <path fillRule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        className="h-5 w-5"
+                        viewBox="0 0 20 20"
+                        fill="currentColor"
+                      >
+                        <path
+                          fillRule="evenodd"
+                          d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z"
+                          clipRule="evenodd"
+                        />
                       </svg>
                       Background Check
                     </h3>
                     <p className="text-sm text-gray-700">{backgroundCheck}</p>
                     {backgroundFlags.length > 0 && (
                       <ul className="mt-1 text-xs text-red-700 list-disc pl-4">
-                        {backgroundFlags.map((flag, i) => <li key={i}>{flag}</li>)}
+                        {backgroundFlags.map((flag, i) => (
+                          <li key={i}>{flag}</li>
+                        ))}
                       </ul>
                     )}
                   </div>
@@ -428,7 +523,9 @@ const PersonProfile = () => {
                 <h2 className="text-xl font-semibold mb-3 text-gray-900">
                   About
                 </h2>
-                <div className="text-gray-700 leading-relaxed whitespace-pre-line">{summary}</div>
+                <div className="text-gray-700 leading-relaxed whitespace-pre-line">
+                  {summary}
+                </div>
               </section>
             )}
 
@@ -440,9 +537,13 @@ const PersonProfile = () => {
                 </h2>
                 <div className="space-y-3 ">
                   {prescreening.map((item, idx) => (
-                    <div key={idx} className="bg-gray-50 p-4 rounded-lg border border-gray-100">
-                      <h3 className="font-normal text-gray-800 mb-1">{item.question}</h3>
-                      
+                    <div
+                      key={idx}
+                      className="bg-gray-50 p-4 rounded-lg border border-gray-100"
+                    >
+                      <h3 className="font-normal text-gray-800 mb-1">
+                        {item.question}
+                      </h3>
                     </div>
                   ))}
                 </div>
@@ -489,8 +590,12 @@ const PersonProfile = () => {
                         {exp.position}
                       </h3>
                       <p className="text-blue-600 font-medium">{exp.company}</p>
-                      <p className="text-sm text-gray-500 mb-2">{exp.duration}</p>
-                      {exp.description && <p className="text-gray-700">{exp.description}</p>}
+                      <p className="text-sm text-gray-500 mb-2">
+                        {exp.duration}
+                      </p>
+                      {exp.description && (
+                        <p className="text-gray-700">{exp.description}</p>
+                      )}
                     </div>
                   ))}
                 </div>
@@ -504,12 +609,19 @@ const PersonProfile = () => {
                   Education
                 </h2>
                 {educationDetails.map((edu, index) => (
-                  <div key={index} className="border-l-2 border-green-200 pl-4 mb-4">
-                    <h3 className="font-semibold text-gray-900">{edu.degree}</h3>
+                  <div
+                    key={index}
+                    className="border-l-2 border-green-200 pl-4 mb-4"
+                  >
+                    <h3 className="font-semibold text-gray-900">
+                      {edu.degree}
+                    </h3>
                     <p className="text-green-600 font-medium">
                       {edu.institution}
                     </p>
-                    {edu.year && <p className="text-sm text-gray-500">{edu.year}</p>}
+                    {edu.year && (
+                      <p className="text-sm text-gray-500">{edu.year}</p>
+                    )}
                   </div>
                 ))}
               </section>
@@ -522,12 +634,19 @@ const PersonProfile = () => {
                   Certifications
                 </h2>
                 {certifications.map((cert, index) => (
-                  <div key={index} className="border-l-2 border-yellow-200 pl-4 mb-4">
+                  <div
+                    key={index}
+                    className="border-l-2 border-yellow-200 pl-4 mb-4"
+                  >
                     <h3 className="font-semibold text-gray-900">{cert.name}</h3>
                     {cert.authority && (
-                      <p className="text-yellow-600 font-medium">{cert.authority}</p>
+                      <p className="text-yellow-600 font-medium">
+                        {cert.authority}
+                      </p>
                     )}
-                    {cert.date && <p className="text-sm text-gray-500">{cert.date}</p>}
+                    {cert.date && (
+                      <p className="text-sm text-gray-500">{cert.date}</p>
+                    )}
                   </div>
                 ))}
               </section>
@@ -542,7 +661,11 @@ const PersonProfile = () => {
                 <div className="flex flex-wrap gap-4">
                   {linkedin && (
                     <a
-                      href={linkedin.startsWith("http") ? linkedin : `https://${linkedin}`}
+                      href={
+                        linkedin.startsWith("http")
+                          ? linkedin
+                          : `https://${linkedin}`
+                      }
                       target="_blank"
                       rel="noopener noreferrer"
                       className="flex items-center gap-2 text-blue-600 hover:text-blue-800 transition-colors"
@@ -559,7 +682,9 @@ const PersonProfile = () => {
                   )}
                   {github && (
                     <a
-                      href={github.startsWith("http") ? github : `https://${github}`}
+                      href={
+                        github.startsWith("http") ? github : `https://${github}`
+                      }
                       target="_blank"
                       rel="noopener noreferrer"
                       className="flex items-center gap-2 text-gray-800 hover:text-black transition-colors"
@@ -576,7 +701,11 @@ const PersonProfile = () => {
                   )}
                   {website && (
                     <a
-                      href={website.startsWith("http") ? website : `https://${website}`}
+                      href={
+                        website.startsWith("http")
+                          ? website
+                          : `https://${website}`
+                      }
                       target="_blank"
                       rel="noopener noreferrer"
                       className="flex items-center gap-2 text-purple-600 hover:text-purple-800 transition-colors"
@@ -600,13 +729,24 @@ const PersonProfile = () => {
                 </div>
               </section>
             )}
-            
+
             {/* Outreach Message (if available) */}
             {outreachMessage && (
               <section className="mt-8 border-t pt-6">
                 <h2 className="text-xl font-semibold mb-3 text-gray-900 flex items-center gap-2">
-                  <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    className="h-5 w-5 text-blue-600"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"
+                    />
                   </svg>
                   Suggested Outreach Message
                 </h2>
@@ -616,12 +756,23 @@ const PersonProfile = () => {
                 <button
                   onClick={() => {
                     navigator.clipboard.writeText(outreachMessage);
-                    alert('Outreach message copied to clipboard!');
+                    alert("Outreach message copied to clipboard!");
                   }}
                   className="mt-3 flex items-center gap-1 text-sm bg-blue-50 hover:bg-blue-100 text-blue-700 font-medium py-1.5 px-3 rounded"
                 >
-                  <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3" />
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    className="h-4 w-4"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3"
+                    />
                   </svg>
                   Copy Message
                 </button>

@@ -1,7 +1,7 @@
 import { Routes, Route } from "react-router-dom";
 import LandingPage from "./components/LandingPage";
 import SearchResults from "./components/SearchResults";
-import Settings from "./components/Settings";
+import Settings from "./components/Settings";import History from "./components/History";
 import AuthProvider from "./context/AuthContext";
 import ProtectedRoute from "./components/ProtectedRoute";
 import HomePage from "./components/HomePage";
@@ -42,6 +42,14 @@ function App() {
             element={
               <ProtectedRoute>
                 <Settings />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/history"
+            element={
+              <ProtectedRoute>
+                <History />
               </ProtectedRoute>
             }
           />

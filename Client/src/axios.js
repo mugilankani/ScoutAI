@@ -90,7 +90,9 @@ api.interceptors.response.use(
         // Attempt to refresh token or re-authenticate.
         // For simplicity, this example retries the original request.
         // A real app might redirect to login or try a token refresh endpoint.
-        console.warn("Received 401, attempting to retry original request once.");
+        console.warn(
+          "Received 401, attempting to retry original request once."
+        );
         // This is a basic retry, might need a proper token refresh logic here
         // e.g. await refreshToken();
         return api(originalRequest);

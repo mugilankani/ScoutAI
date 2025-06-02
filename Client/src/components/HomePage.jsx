@@ -79,26 +79,36 @@ const HomePage = () => {
         recruiterQuery: messageToSend,
         filterPresent: false, // Or get from UI if you add a filter option
       };
-      
+
       // Fix the user ID capture to ensure it's properly included
       if (user) {
         // Ensure user ID is correctly passed
         payload.userId = user.uid || user.id;
         console.log("HOMEPAGE: Including user ID in request:", payload.userId);
       } else {
-        console.warn("HOMEPAGE: No user object available - search will be anonymous");
+        console.warn(
+          "HOMEPAGE: No user object available - search will be anonymous"
+        );
       }
 
-      console.log("HOMEPAGE: Making POST /api/candidates/search with payload:", payload);
+      console.log(
+        "HOMEPAGE: Making POST /api/candidates/search with payload:",
+        payload
+      );
       // *** THIS IS THE CRUCIAL API CALL TO INITIATE THE SEARCH ON THE BACKEND ***
       const response = await axiosInstance.post("/candidates/search", payload);
-      console.log("HOMEPAGE: Received response from POST /api/candidates/search:", response);
+      console.log(
+        "HOMEPAGE: Received response from POST /api/candidates/search:",
+        response
+      );
 
       if (response.status === 202 && response.data.searchId) {
         const serverGeneratedSearchId = response.data.searchId;
         const initialDataFromServer = response.data.initialData; // Progress, statusMessage etc.
 
-        console.log(`HOMEPAGE: Search initiated successfully by backend. Server Search ID: ${serverGeneratedSearchId}`);
+        console.log(
+          `HOMEPAGE: Search initiated successfully by backend. Server Search ID: ${serverGeneratedSearchId}`
+        );
         // FIX: Change the route to match the one in App.jsx (/s/:searchId instead of /search-results/:searchId)
         navigate(`/s/${serverGeneratedSearchId}`, {
           state: {
@@ -109,15 +119,25 @@ const HomePage = () => {
         });
       } else {
         // Handle unexpected success response (e.g., 200 OK but no searchId)
-        console.error("HOMEPAGE: Unexpected response from search initiation:", response);
-        alert(`Error: Could not start search. Server responded with status ${response.status}.`);
+        console.error(
+          "HOMEPAGE: Unexpected response from search initiation:",
+          response
+        );
+        alert(
+          `Error: Could not start search. Server responded with status ${response.status}.`
+        );
         setLoading(false);
       }
     } catch (err) {
-      console.error("HOMEPAGE: Error calling POST /api/candidates/search or navigating:", err);
+      console.error(
+        "HOMEPAGE: Error calling POST /api/candidates/search or navigating:",
+        err
+      );
       if (err.response) {
         console.error("HOMEPAGE: Error response data:", err.response.data);
-        alert(`Error starting search: ${err.response.data.error || err.message}`);
+        alert(
+          `Error starting search: ${err.response.data.error || err.message}`
+        );
       } else {
         alert(`Error starting search: ${err.message}`);
       }
