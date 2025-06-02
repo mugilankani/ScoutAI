@@ -6,6 +6,7 @@ import cors from "cors";
 import cookieParser from "cookie-parser";
 import { v4 as uuidv4 } from "uuid";
 import path from "path";
+import fs from "fs";
 import { fileURLToPath } from "url";
 import { firestore } from "./config/firebaseAdmin.js";
 import { findCandidatesAndFetchProfiles } from "./controllers/hiringControllers.js";
@@ -45,9 +46,6 @@ app.use(
 
 app.use(express.json());
 app.use(cookieParser());
-
-// Serve static files from the backend's dist folder
-app.use(express.static(path.join(__dirname, "dist")));
 
 // Diagnostic middleware to log all requests
 app.use((req, res, next) => {
@@ -215,16 +213,25 @@ app.post("/api/test-suggest", async (req, res) => {
   }
 });
 
-// Catch-all handler: send back React's index.html file for non-API routes
-app.get("*", (req, res) => {
+// Serve static files from the backend's dist folder
+app.use(express.static(path.join(__dirname, "dist")));
+
+// Handle React routing - catch all non-API routes
+app.get(/^(?!\/api).*/, (req, res) => {
   const indexPath = path.join(__dirname, "dist", "index.html");
-  console.log(`Serving index.html from: ${indexPath}`);
-  res.sendFile(indexPath, (err) => {
-    if (err) {
-      console.error("Error serving index.html:", err);
-      res.status(500).send("Error loading the application");
-    }
-  });
+  console.log(`Serving index.html from: ${indexPath} for route: ${req.path}`);
+
+  // Check if index.html exists before trying to serve it
+  if (fs.existsSync(indexPath)) {
+    res.sendFile(indexPath);
+  } else {
+    console.error(`index.html not found at: ${indexPath}`);
+    res
+      .status(404)
+      .send(
+        "Frontend application not found. Please ensure the dist folder contains the built frontend files."
+      );
+  }
 });
 
 // Start the server
