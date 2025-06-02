@@ -23,7 +23,7 @@ export async function executeSerpSearches(
   serpApiKey,
   addFilterPresent = false
 ) {
-  searchPayloads = searchPayloads.slice(0, 1);
+  searchPayloads = searchPayloads.slice(0, 2);
   const allOrganicResults = [];
 
   for (const payload of searchPayloads) {
